@@ -33,7 +33,6 @@
     clojure-mode
     clojure-mode-extra-font-locking
     company
-    evil
     flycheck
     magit
     paredit
@@ -60,9 +59,6 @@
   :ensure t
   :config (global-company-mode)
   )
-
-(require 'evil)
-  (evil-mode 1)
 
 (use-package flycheck
   :ensure t
@@ -124,7 +120,6 @@
       telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-left)
 (setq telephone-line-height 24
       telephone-line-evil-use-short-tag t)
-(telephone-line-evil-config)
 (telephone-line-mode 1)
 
 
@@ -136,16 +131,16 @@
 (setq recentf-max-menu-items 40)
 
 ;; point to the last place where it was when you the file was last visited
-(require 'saveplace)
-(setq-default save-place t)
+(save-place-mode 1)
 
 ;; keep track of saved places in ~/.emacs.d/places
 (setq save-place-file (concat user-emacs-directory "places"))
 
 ;;; insensitivity to case in find file and eshell
 (setq read-file-name-completion-ignore-case t)
-(setq eshell-glob-case-insensitive t)
-(setq pcomplete-ignore-case t)
+ (add-hook 'eshell-mode-hook
+               (lambda ()
+                (setq case-fold-search nil)))
 
 ;;; (yes or no) questions replace with (y or n)
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -160,6 +155,13 @@
 ;;; line number and highlght
 (global-linum-mode)
 (global-hl-line-mode 1)
+
+;;; scroll one line at a time (less jumpy)
+(require 'sublimity)
+(require 'sublimity-scroll)
+(sublimity-mode 1)
+(setq sublimity-scroll-weight 5
+      sublimity-scroll-drift-length 2)
 
 ;;; killing/yanking interact with the clipboard
 (setq
@@ -183,11 +185,37 @@
 	      sh-indentation 2)
 
 ;;; c mode style/indentation
-(setq c-default-style "linux")
-(setq-default c-basic-offset 4)
+(setq-default indent-tabs-mode t)
+(setq smex-save-file (concat user-emacs-directory ".smex-items"))
+(smex-initialize)
+(global-set-key (kbd "M-x") 'smex)
 
-;;; bash-like completion in eshell
-(setq eshell-cmpl-cycle-completions nil)
+
+;;; EDITING
+;;; line number and highlght
+(global-linum-mode)
+(global-hl-line-mode 1)
+
+;;; killing/yanking interact with the clipboard
+(setq
+      select-enable-clipboard t
+      select-enable-primary t
+      save-interprogram-paste-before-kill t)
+
+;;; parentheses highlight and colour
+(show-paren-mode 1)
+(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+
+;;; backup files in a directory
+(setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups"))))
+
+;;; MODE SPECIFIC
+;;; shell scripts indentation
+(setq-default sh-basic-offset 2
+	      sh-indentation 2)
+
+;;; c mode style/indentation
+(setq c-default-style "linux")
 
 ;;; clojure/elisp setup
 (add-to-list 'load-path "~/.emacs.d/customizations")
@@ -198,9 +226,9 @@
 
 ;;; Ease OF USE
 ;;; key bindings
-(global-set-key (kbd "C-x c") 'kill-ring-save)
-(global-set-key (kbd "C-x x") 'kill-region)
-(global-set-key (kbd "C-x v") 'yank)
+(global-set-key (kbd "C-c c") 'kill-ring-save)
+(global-set-key (kbd "C-c x") 'kill-region)
+(global-set-key (kbd "C-c v") 'yank)
 
 (global-set-key (kbd "M-;") 'comment-or-uncomment-region)
 (global-set-key (kbd "C-c C-c") 'comment-line)
@@ -217,7 +245,7 @@
     ("e1d09f1b2afc2fed6feb1d672be5ec6ae61f84e058cb757689edb669be926896" "aded61687237d1dff6325edb492bde536f40b048eab7246c61d5c6643c696b7f" default)))
  '(package-selected-packages
    (quote
-    (evil telephone-line yasnippet flycheck company powerline use-package tagedit smex rainbow-delimiters projectile paredit magit ido-completing-read+ exec-path-from-shell clojure-mode-extra-font-locking cider))))
+    (sublimity evil telephone-line yasnippet flycheck company powerline use-package tagedit smex rainbow-delimiters projectile paredit magit ido-completing-read+ exec-path-from-shell clojure-mode-extra-font-locking cider))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
