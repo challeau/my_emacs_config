@@ -5,8 +5,16 @@
 ;;; --------------------------------------------------
 ;;; Code:
 
-;;; packages
+;;; EASE OF USE
+;;; key bindings
+(global-set-key (kbd "C-c c") 'kill-ring-save)
+(global-set-key (kbd "C-c x") 'kill-region)
+(global-set-key (kbd "C-c v") 'yank)
 
+(global-set-key (kbd "M-;") 'comment-or-uncomment-region)
+(global-set-key (kbd "C-c C-c") 'comment-line)
+
+;;; PACKAGES
 (when (>= emacs-major-version 24)
   (require 'package)
   (add-to-list 'package-archives
@@ -222,17 +230,6 @@
 (load "setup-clojure.el")
 (load "setup-js.el")
 (load "elisp-editing.el")
-
-
-;;; Ease OF USE
-;;; key bindings
-(global-set-key (kbd "C-c c") 'kill-ring-save)
-(global-set-key (kbd "C-c x") 'kill-region)
-(global-set-key (kbd "C-c v") 'yank)
-
-(global-set-key (kbd "M-;") 'comment-or-uncomment-region)
-(global-set-key (kbd "C-c C-c") 'comment-line)
-
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
