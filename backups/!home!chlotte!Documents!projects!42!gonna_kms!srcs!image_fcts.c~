@@ -1,0 +1,19 @@
+#include "../inc/minirt.h"
+
+void	write_to_image(t_rgb color, t_mlx_img *img, t_vec2f pixel){
+	int	bpp;
+	int	size_line;
+	int	endian;
+	size_t	pos;
+
+	img->img_data = mlx_get_data_addr(img->img_ptr, &bpp, &size_line, &endian);
+	pos = (pixel.y * 4 * win_w) + pixel.x * 4;
+	/* img->img_data[pos] = (((uint8_t)color.r & 0x0ff) << 16) | */
+	/* 	(((uint8_t)color.g & 0x0ff) << 8) | */
+	/* 	((uint8_t)color.b & 0x0ff); */
+
+	img->img_data[pos] = color.z;
+	img->img_data[pos + 1] = color.y;
+	img->img_data[pos + 2] = color.x;
+	img->img_data[pos + 3] = 0;
+}

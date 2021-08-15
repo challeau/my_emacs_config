@@ -1,0 +1,1 @@
+alias 42header python3 ~/Documents/code/useful_shite/42_header.py $*

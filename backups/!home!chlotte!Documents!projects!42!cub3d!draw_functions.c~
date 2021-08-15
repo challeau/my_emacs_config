@@ -1,0 +1,32 @@
+#include "cub3d.h"
+
+void	ft_draw_straight_line(struct s_mlx_obj mlx, struct s_line line, int rgb)
+{
+	while (line.x1 <= line.x2 || line.y1 <= line.y2){
+		mlx_pixel_put(mlx.mlx_ptr, mlx.win_ptr, line.x1, line.y1, rgb);
+		if (line.x1 <= line.x2)
+			line.x1++;
+		else if (line.y1 <= line.y2)
+			line.y1++;
+	}
+}
+
+void	ft_bresenham(struct s_mlx_obj mlx, struct s_line line, int rgb)
+{
+	int p0;
+	int p;
+	
+	p0 = line.dy + line.dx;
+	while ((line.x1 != line.x2) && (line.y1 != line.y2)){
+		mlx_pixel_put(mlx.mlx_ptr, mlx.win_ptr, line.x1, line.y1, rgb);
+		p = p0 << 1;
+		if (p >= line.dy){     //pixel to right-up is chosen
+			line.x1 += line.x1 < line.x2 ? 1 : -1;
+			p0 += line.dy;
+		}
+		if (p <= line.dx){            //pixel to right is chosen
+			line.y1 += line.y1 < line.y2 ? 1 : -1;
+			p0 += line.dx;
+		}
+	}
+}

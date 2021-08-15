@@ -1,0 +1,55 @@
+import datetime
+import pickle
+from prettytable import PrettyTable
+
+today = datetime.datetime(2020, 3, 22, hour=8, minute=11)
+# datetime.datetime.today()
+fish_list = pickle.load(open(".fish_soup", "rb"))
+current_fish = {}
+# avg_price_pond = avg_price_sea = avg_price_river = 0
+# avg_price = {'Sea': avg_price_sea, 'River': avg_price_river, 'Pond':
+# avg_price_pond}
+
+tab = PrettyTable()
+tab.field_names = ['NAME', 'PRICE', 'RARITY', 'SIZE', 'LOCATION']
+# , 'CAUGHT ?']
+
+print("HELLO! THIS SCRIPT WILL SHOW YOU WHAT FISH ARE AVAILABLE RIGHT NOW.\n\n")
+for fish in fish_list:
+    if fish_list[fish]['season'][str(today.month)] == 1:
+        if fish_list[fish]['time'] == 'All day':
+            current_fish[fish] = fish_list[fish]
+        elif fish_list[fish]['time'] == '4 AM - 9 PM' and today.hour >= 4 and today.hour < 21:
+            current_fish[fish] = fish_list[fish]
+        elif fish_list[fish]['time'] == '9 AM - 4 PM' and today.hour >= 9 and today.hour < 16:
+            current_fish[fish] = fish_list[fish]
+        elif fish_list[fish]['time'] == '4 PM - 9 AM' and (today.hour >= 16 or today.hour < 9):
+            current_fish[fish] = fish_list[fish]
+        elif fish_list[fish]['time'] == '9 PM - 4 AM' and (today.hour >= 21 or today.hour < 4):
+            current_fish[fish] = fish_list[fish]
+        elif fish_list[fish]['time'] == '9 AM - 4 PM & 9 PM - 4 AM' and ((today.hour >= 9 and today.hour < 16) or (today.hour >= 21 or today.hour < 4)):
+            current_fish[fish] = fish_list[fish]
+
+# for fish in current_fish:
+#     if current_fish[fish]['status'] != '✓':
+#         caught = input("Did you catch " + str(fish) + "? (y or n)")
+#         if caught == "y":
+#             current_fish[fish]['status'] = '✓'
+#         else:
+#             current_fish[fish]['status'] = ' '
+
+for fish in current_fish:
+    tab.add_row([fish, current_fish[fish]['price'], current_fish[fish]['rarity'], current_fish[fish]['size'], current_fish[fish]['location']])
+
+# , current_fish[fish]['status']])
+
+print(tab)
+
+# if current_fish[fish]['location'] == 'Sea' or current_fish[fish]['location'] == 'Pier':
+#     avg_price_sea += 1
+# if current_fish[fish]['location'] == 'Pond':
+#     avg_price_pond += 1
+# if current_fish[fish]['location'] == 'River':
+#     avg_price_river += 1
+# best_price = max(avg_price)
+# print("For greater profit, consider fishing in", avg_price[])

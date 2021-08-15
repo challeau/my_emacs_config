@@ -1,0 +1,8 @@
+from bs4 import BeautifulSoup
+import requests
+
+page = requests.get('https://animalcrossing.fandom.com/wiki/Fish_(New_Horizons)#Northern%20Hemisphere')
+soup = BeautifulSoup(page.content, 'html.parser')
+table = soup.find(title='Northern Hemisphere')
+job_elems = tables.find_all('a', class_='card-content')
+print(tables)

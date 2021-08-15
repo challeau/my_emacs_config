@@ -1,0 +1,202 @@
+#ifndef MINIRT_H
+#define MINIRT_H
+#include <mlx.h>
+#include <X11/Xlib.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <math.h>
+#include "Libft/libft.h"
+#include <stdio.h>
+#include <assert.h>
+
+#define MAX_STEPS 100
+#define MAX_DIST 100.0
+#define SURF_DIST .01
+
+#define ESC 0xff1b
+
+/* list[1] = (t_object){.type = e_OBJ_SPHERE, */
+	/* 		     .pos = {-1, 2, 6}, */
+	/* 		     .data.sphere.radius = 0.5, */
+	/* 		     .color = {255,215,0}}; */
+	/* list[2] = (t_object){.type = e_OBJ_SPHERE, */
+	/* 		     .pos = {1, 2, 6}, */
+	/* 		     .data.sphere.radius = 0.5, */
+	/* 		     .color = {255,215,0}}; */
+	/* list[3] = (t_object){.type = e_OBJ_SPHERE, */
+	/* 		     .pos = {0, 1, 6}, */
+	/* 		     .data.sphere.radius = 0.5, */
+	/* 		     .color = {152,251,152}}; */
+	/* list[4] = (t_object){.type = e_OBJ_SPHERE, */
+	/* 		     .pos = {-1, 0, 6}, */
+	/* 		     .data.sphere.radius = 0.5, */
+	/* 		     .color = {64,224,208}}; */
+	/* list[5] = (t_object){.type = e_OBJ_SPHERE, */
+	/* 		     .pos = {1, 0, 6}, */
+	/* 		     .data.sphere.radius = 0.5, */
+	/* 		     .color = {64,224,208}}; */
+	/* list[6] = (t_object){.type = e_OBJ_SPHERE, */
+	/* 		     .pos = {0, -1, 6}, */
+	/* 		     .data.sphere.radius = 0.5, */
+	/* 		     .color = {186,85,211}}; */
+	/* list[7] = (t_object){.type = e_OBJ_PLANE, */
+	/* 		     .pos = {0, 50, 2}, */
+	/* 		     .data.plane.orientation = {0,1,0}, */
+	/* 		     .color = {240,128,128}}; */
+
+// MLX RELATED
+typedef struct	s_mlx_obj{
+	void	*mlx_ptr;
+	void	*win_ptr;		
+}		t_mlx_obj;
+
+typedef struct	s_mlx_img{
+	void	*img_ptr;
+	char	*img_data;
+}		t_mlx_img;
+
+// OBJECTS
+typedef struct	s_vec2f {
+	float	x;
+	float	y;
+}		t_vec2f;
+
+typedef struct	s_vec3f {
+	float	x;
+	float	y;
+	float	z;
+}		t_vec3f;
+
+typedef struct	s_vec2i {
+	int	x;
+	int	y;
+}		t_vec2i;
+
+typedef struct	s_vec3i {
+	int	x;
+	int	y;
+	int	z;
+}		t_vec3i;
+
+typedef struct s_vec3f t_rgb;
+
+typedef struct	s_cam {
+	t_vec3f	pos;
+	t_vec3f dir;
+	uint8_t	fov;
+}		t_cam;
+
+typedef struct	s_amb_light {
+	float	ratio;
+	t_rgb	color;
+}		t_amb_light;
+
+enum		e_objects {
+		e_OBJ_LIGHT,
+		e_OBJ_SPHERE,
+		e_OBJ_PLANE,
+		e_OBJ_SQUARE,
+		e_OBJ_CYLINDER,
+		e_OBJ_TRIANGLE,
+		e_OBJ_NONE,
+		__OBJ_TOTAL,
+};
+
+typedef struct	s_object {
+	enum e_objects	type;	// enum_val from id_index
+	t_vec3f		pos;
+	t_rgb		color;
+
+	union	data {
+		struct	light {
+			float	ratio;
+		}	light;
+
+		struct	sphere {
+			float	radius;
+		}	sphere;
+
+		struct	plane {
+			t_vec3f	orientation;
+		}	plane;
+		
+		struct	square {
+			t_vec3f	orientation;
+			float	length;
+		}	square;
+		
+		struct	cylinder {
+			float	length;
+			float	radius;
+			t_vec3f	orientation;
+		}	cylinder;
+		
+		struct	triangle {
+			t_vec3f	p1;
+			t_vec3f	p2;
+			t_vec3f	p3;
+		}	triangle;
+	}	data;
+}		t_object;
+
+typedef struct	s_scene {
+	t_vec2i		window_res;
+	t_amb_light	amb_light;
+	t_object	*obj_list;
+	t_cam		*cam_list;
+	uint8_t		cam_ref;
+}		t_scene;
+
+/* PARSER */
+bool	scene_parser(int ac, char **av, t_scene *scene, void *mlx_ptr);
+void	alloc_scene_lists(t_scene *scene);
+bool	assign_element(t_scene *scene, char **attributes, void *mlx_ptr);
+bool	get_scene(int fd, t_scene *scene, void *mlx_ptr);
+
+int	id_index(const char *id);
+
+/* elem set */
+bool	set_res(t_scene *scene, char **attributes, void *mlx_ptr);
+bool	set_ambl(t_scene *scene, char **attributes);
+bool	set_cam(t_scene *scene, char **attributes);
+
+/* obj set */
+bool	set_light(char **attributes, t_scene *scene, uint8_t *elem_num);
+bool	set_sphere(char **attributes, t_scene *scene, uint8_t *elem_num);
+bool	set_plane(char **attributes, t_scene *scene, uint8_t *elem_num);
+bool	set_square(char **attributes, t_scene *scene, uint8_t *elem_num);
+bool	set_cylinder(char **attributes, t_scene *scene, uint8_t *elem_num);
+bool	set_triangle(char **attributes, t_scene *scene, uint8_t *elem_num);
+
+/* parser tools */
+bool	check_attributes_num(char **attributes, uint8_t expected);
+int	ft_compare_strs(const char *str1, const char *str2);
+bool	get_elem_color(char *attributes, t_vec3f *pos);
+bool	get_elem_orientation(char *attributes, t_vec3f *pos);
+bool	get_elem_position(char *attributes, t_vec3f *pos);
+
+/* TOOLS */
+/* vector tools */
+float	vec_magnitude(t_vec3f p1, t_vec3f p2);
+t_vec3f	vec_normalize(t_vec3f uv);
+float	vec_dot(t_vec3f v1, t_vec3f v2);
+t_vec3f	vec_add(t_vec3f v1, t_vec3f v2);
+t_vec3f	vec_sub(t_vec3f v1, t_vec3f v2);
+t_vec3f	vec_mult(t_vec3f v1, t_vec3f v2);
+
+/* scalar ops */
+t_vec3f	vec_scal_add(t_vec3f uv, float scalar);
+t_vec3f	vec_scal_sub(t_vec3f uv, float scalar);
+t_vec3f	vec_scal_mult(t_vec3f uv, float scalar);
+t_vec3f	vec_scal_div(t_vec3f uv, float scalar);
+
+/* float tools */
+int	ft_fabs(int num);
+int	ft_ffloor(float value);
+float	ft_fmod(float x, float y);
+float	ft_fclamp(float num, float low_bound, float high_bound);
+
+#endif

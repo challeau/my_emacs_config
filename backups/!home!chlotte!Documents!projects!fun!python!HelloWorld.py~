@@ -1,0 +1,12 @@
+name = "Charlotte"
+age = 21
+lame = [1, 2, 3]
+suple = (4, "loooool")
+lame.extend(suple)
+
+print("Hello World! My name is", name, 'and I "am"', age, "years old")
+print(lame[:2])
+print(name.upper())
+while age < 32:
+    print(age)
+    age += 1

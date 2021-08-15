@@ -1,0 +1,14 @@
+#include "libft.h"
+
+void	ft_memdel_strptr(char **array)
+{
+	char	**array_ptr;
+	
+	array_ptr = array;
+	while (*array_ptr != NULL)
+	{
+		ft_memdel(*array_ptr);
+		array_ptr++;
+	}
+
+}

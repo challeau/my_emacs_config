@@ -1,0 +1,127 @@
+#include "../../minirt.h"
+
+bool		(**scene_set_init(void))(char **attributes, t_scene *scene){
+	static bool	(*scene_set[2])(char **attributes, t_scene *scene);
+
+	scene_set[0] = &set_res;
+	scene_set[1] = &set_ambl;
+	return (&scene_set[0]);
+}
+
+
+t_object	(**obj_set_init(void))(char **attributes){
+	static t_object	(*obj_set[7])(char **attributes);
+
+	obj_set[0] = &set_cam;
+	obj_set[1] = &set_light;
+	obj_set[2] = &set_sphere;
+	obj_set[3] = &set_plane;
+	obj_set[4] = &set_square;
+	obj_set[5] = &set_cylinder;
+	obj_set[6] = &set_triangle;
+	return (&obj_set[0]);
+}
+
+int	id_index(char *id){
+	int	i;
+	static const char	*identifier_array[__OBJ_TOTAL] = {
+		"R","A","c","l","sp","pl","sq",	"cy", "tr",
+	};
+
+	i = 0;
+	while (i < __OBJ_TOTAL - 1){
+		if (ft_strcmp(id, identifier_array[i]) == 0)
+			return (i);
+		i++;
+	}
+	return (-1);
+}
+
+bool	assign_obj(char **attributes, t_scene *scene){
+	int		enum_val;
+	t_object	new;
+	bool		(**scene_set)(char **attributes, t_scene *scene);
+	t_object	(**obj_set)(char **attributes);
+	
+	scene_set = scene_set_init();
+	obj_set = obj_set_init();
+	enum_val = id_index(attributes[0]);
+	if (enum_val == 0 || enum_val == 1){
+		return (scene_set[enum_val](attributes, scene));
+	}
+	else if (enum_val > 1){
+		new = obj_set[enum_val - 2](attributes);
+		if (new.type == e_OBJ_NONE){
+			return (false);
+		}
+		new.type = enum_val;
+		add_obj2lst(&scene->obj_list, new_obj_lst(new));
+		return (true);
+	}
+	return (true);
+}
+
+t_scene	parser(int ac, char **av){
+	int	fd;
+	int	ret;
+	char	*line;
+	char	**attributes;
+	t_scene scene;
+
+	ret = 1;
+	if (ac == 2){
+		fd = open(av[1], O_RDONLY);
+		while (ret > 0)
+		{
+			ret = get_next_line(fd, &line);
+			if (*line != '\0'){
+				attributes = ft_split(line, ' ');
+				if (assign_obj(attributes, &scene) == false){
+					scene.is_set = false;
+					printf("scene.set is false <3\n");
+					break ;
+				}
+				printf("%s\n", line);
+			       	ft_memdel(line);
+			}
+		}
+		add_obj2lst(&scene.obj_list, new_obj_lst((t_object){.type = e_OBJ_NONE}));
+		scene.is_set = true;
+		close(fd);
+	}
+	else
+		scene.is_set = false;
+	return(scene);
+}
+
+/* int	main(int ac, char **av) */
+/* { */
+/* 	t_scene scene = parser(ac, av); */
+/* 	while (scene.obj_list->next != NULL){ */
+/* 		printf("%u\n", scene.obj_list->obj.type); */
+/* 		scene.obj_list =  scene.obj_list->next; */
+/* 	} */
+/* 	return (0); */
+/* } */
+
+
+	/* t_scene	scene; */
+	/* t_object	sphere = (t_object){ */
+	/* 		.type = e_OBJ_SPHERE, */
+	/* 		.pos  = {0,1,4}, */
+	/* 		.color = {255,255,255}, */
+	/* 		.data.sphere.r = 1., */
+	/* }; */
+	/* t_object	plane = (t_object){ */
+	/* 	.type = e_OBJ_PLANE, */
+	/* 	.pos = {0,1,0}, */
+	/* 	.data.plane.orientation = (t_vec3){0,1,0}, */
+	/* }; */
+	/* t_object	none = (t_object){ */
+	/* 	.type = e_OBJ_NONE, */
+	/* }; */
+	/* scene.res = (t_vec2){500, 500}; */
+	/* scene.cam = (t_cam){(t_vec3){0, 1, 0}, (t_vec3){0, 0, 0}, 180}; */
+	/* scene.obj_list = new_obj_lst(sphere); */
+	/* add_obj2lst(&scene.obj_list, new_obj_lst(plane)); */
+	/* add_obj2lst(&scene.obj_list, new_obj_lst(none)); */

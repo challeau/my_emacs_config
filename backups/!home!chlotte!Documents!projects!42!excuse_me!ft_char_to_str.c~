@@ -1,0 +1,10 @@
+#include "tools.h"
+
+char	*ft_char_to_str(char c)
+{
+    static char new[2];
+    
+    new[0] = c;
+    new[1] = 0;
+    return (&new[0]);
+}

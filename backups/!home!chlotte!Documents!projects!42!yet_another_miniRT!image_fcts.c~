@@ -1,0 +1,18 @@
+#include "minirt.h"
+
+/* bpp, size_line and endian are set by mlx_get_data_address. */
+/* bpp = 32 (pixel = 4 char = 8 bits each = 32). */
+/* size_line = win_width times 4 (pixel = 4 chars). */
+/* endian = 0 or 1 depending on the computer's architecture. */
+void	write2image(t_vec3f color, t_mlx_img *img, t_vec2i pixel, t_scene scene){
+	int	bpp;
+	int	size_line;
+	int	endian;
+	size_t	pos;
+
+	img->img_data = mlx_get_data_addr(img->img_ptr, &bpp, &size_line, &endian);
+	pos = (pixel.y * 4 * scene.window_res.y) + pixel.x * 4;
+	img->img_data[pos] = color.x;		// red
+	img->img_data[pos + 1] = color.y;	// green
+	img->img_data[pos + 2] = color.z;	// blue
+}

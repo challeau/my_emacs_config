@@ -1,0 +1,185 @@
+#ifndef MINIRT_H
+#define MINIRT_H
+#include <mlx.h>
+#include <X11/Xlib.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <math.h>
+#include <stdio.h>
+#include "Libft/libft.h"
+
+#define MAX_STEPS 100
+#define MAX_DIST 100.0
+#define SURF_DIST .01
+
+#define ESC 0xff1b
+
+// MLX RELATED
+typedef struct	s_mlx_obj{
+	void	*mlx_ptr;
+	void	*win_ptr;		
+}		t_mlx_obj;
+
+typedef struct	s_mlx_img{
+	void	*img_ptr;
+	char	*img_data;
+}		t_mlx_img;
+
+// OBJECTS
+typedef struct	s_vec2f {
+	float	x;
+	float	y;
+}		t_vec2f;
+
+typedef struct	s_vec3f {
+	float	x;
+	float	y;
+	float	z;
+}		t_vec3f;
+
+typedef struct	s_vec2fi {
+	int	x;
+	int	y;
+}		t_vec2i;
+
+typedef struct	s_vec3i {
+	int	x;
+	int	y;
+	int	z;
+}		t_vec3i;
+
+typedef struct s_vec3f t_rgb; 
+
+enum		e_scene_elements {
+		e_ELEM_RES,
+		e_ELEM_AMBL,
+		e_ELEM_CAM,
+		e_ELEM_LIGHT,
+		e_ELEM_SPHERE,
+		e_ELEM_PLANE,
+		e_ELEM_SQUARE,
+		e_ELEM_CYLINDER,
+		e_ELEM_TRIANGLE,
+		e_ELEM_NONE,
+		__ELEM_TOTAL,
+};
+
+
+typedef struct	s_scene_element {
+	enum e_scene_elements	type;	// enum_val from id_index
+	t_vec3f		pos;
+	t_rgb		color;
+
+	union	data {
+		struct	light {
+			float	ratio;
+		}	light;
+
+		struct	sphere {
+			float	r;
+		}	sphere;
+
+		struct	plane {
+			t_vec3f	orientation;
+		}	plane;
+		
+		struct	square {
+			t_vec3f	orientation;
+			float	l;
+		}	square;
+		
+		struct	cylinder {
+			float	l;
+			float	r;
+			t_vec3f	orientation;
+		}	cylinder;
+		
+		struct	triangle {
+			t_vec3f	p1;
+			t_vec3f	p2;
+			t_vec3f	p3;
+		}	triangle;
+
+	}	data;
+}		t_scene_element;
+
+typedef struct	s_amb_light {
+	float	ratio;
+	t_rgb	color;
+}		t_amb_light;	
+
+typedef struct	s_cam {
+	t_vec3f	pos;
+	t_vec3f	orientation;
+	t_vec3f	dir;
+	int	fov;
+}		t_cam;
+
+typedef struct	s_scene{
+	bool		scene_is_set;
+	t_vec2i		window_res;
+	t_amb_light	amb_light;
+	t_scene_element	elem_list[20];
+	t_cam		cam_list[10];
+	uint8_t		cam_ref;
+}		t_scene;
+
+// PARSER
+bool	parse_scene(int ac, char **av, t_scene *scene, t_mlx_obj mlx);
+t_scene get_scene(int fd);
+// set element functions
+bool	set_res(char **attributes, t_scene *scene, uint8_t *elem_num);
+bool	set_ambl(char **attributes, t_scene *scene, uint8_t *elem_num);
+bool	set_cam(char **attributes, t_scene *scene, uint8_t *elem_num);
+bool	set_light(char **attributes, t_scene *scene, uint8_t *elem_num);
+bool	set_sphere(char **attributes, t_scene *scene, uint8_t *elem_num);
+bool	set_plane(char **attributes, t_scene *scene, uint8_t *elem_num);
+bool	set_square(char **attributes, t_scene *scene, uint8_t *elem_num);
+bool	set_cylinder(char **attributes, t_scene *scene, uint8_t *elem_num);
+bool	set_triangle(char **attributes, t_scene *scene, uint8_t *elem_num);
+// parser tools
+int	ft_compare_strs(const char *str1, const char *str2);
+bool	check_attributes_num(char **attributes, uint8_t expected);
+bool	get_elem_color(char *attributes, t_vec3f *color);
+bool	get_elem_position(char *attributes, t_vec3f *pos);
+bool	get_elem_orientation(char *attributes, t_vec3f *ori);
+
+// RAYARCHER
+t_vec3f	get_pixel_color(t_vec2f pixel, t_scene scene);
+float	raymarch(t_scene scene);
+float	get_dist(t_vec3f p, t_scene scene);
+float	get_light(float dist_obj, t_scene scene);
+t_vec3f	get_normal(t_vec3f pos, t_scene scene);
+// sdf fucntions
+float	sdf_sphere(t_vec3f p, t_scene_element obj);
+float	sdf_plane(t_vec3f p, t_scene_element obj);
+// raymarch tools
+t_rgb	float_to_rgb(float value);
+float	ft_get_min_dist(float obj_dists[10]);
+t_vec3f	normalize_screen_coordinates(t_vec2f pixel, t_scene scene);
+//vector tools
+float	vec_magnitude(t_vec3f p1, t_vec3f p2);
+t_vec3f	vec_normalize(t_vec3f uv);
+float	vec_dot(t_vec3f v1, t_vec3f v2);
+t_vec3f	vec_add(t_vec3f v1, t_vec3f v2);
+t_vec3f	vec_sub(t_vec3f v1, t_vec3f v2);
+// scalar ops
+t_vec3f	vec_scal_add(t_vec3f uv, float scalar);
+t_vec3f	vec_scal_sub(t_vec3f uv, float scalar);
+t_vec3f	vec_scal_mult(t_vec3f uv, float scalar);
+t_vec3f	vec_scal_div(t_vec3f uv, float scalar);
+// float tools
+int	ft_abs(int num);
+int	ft_floor(float value);
+float	ft_mod(float x, float y);
+
+// IMAGE
+void	write2image(t_vec3f color, t_mlx_img img, t_vec2f pixel, t_scene scene);
+
+// EVENTS
+int	ft_exit(int keycode, void *param);
+
+#endif

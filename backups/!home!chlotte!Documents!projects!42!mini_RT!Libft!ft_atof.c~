@@ -1,0 +1,28 @@
+#include "libft.h"
+
+float	ft_atof(const char*str){
+	float res;
+	uint deg;
+	int sign;
+
+	sign = 1;
+	res = 0;
+	deg = 10;
+	if (*str == '-'){
+		sign *= -1;
+		str++;
+	}
+	while (*str >= '0' && *str <= '9'){
+		res = res * 10 + (*str - 48);
+		str++;
+	}
+	if (*str == '.'){
+		str++;
+		while (*str >= '0' && *str <= '9'){
+			res += (*str - 48) / (double)deg;
+			deg *= 10;
+			str++;
+		}
+	}
+	return (sign * res);
+}

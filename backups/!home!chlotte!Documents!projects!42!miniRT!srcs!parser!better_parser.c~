@@ -1,0 +1,101 @@
+#include "../../minirt.h"
+
+bool	ft_error(int err){
+	if (err == 0)
+		printf("oops, there's an error in your file\n");
+	if (err == 1)
+		printf("yikes, there's an error with your arguments\n");
+	return (false);
+}
+
+int	id_index(const char *id){
+	int			i;
+        static const char	*elem_id_array[__ELEM_TOTAL] = {
+		"R", "A", "c", "l", "sp", "pl", "sq", "cy", "tr"};
+
+	i = 0;
+	while (i < __ELEM_TOTAL){
+		if (ft_compare_strs(id, elem_id_array[i]) == 1)
+			return (i);
+		i++;
+	}
+	return (-1);
+}
+
+bool	(**set_fcts_init(void))(char **attributes, t_scene *scene, uint8_t elem_num){
+	static bool	(*set_fcts[9])(char **attributes,
+					t_scene *scene, uint8_t elem_num);
+
+	set_fcts[0] = &set_res;
+	set_fcts[1] = &set_ambl;
+	set_fcts[2] = &set_cam;
+	set_fcts[3] = &set_light;
+	set_fcts[4] = &set_sphere;
+	set_fcts[5] = &set_plane;
+	set_fcts[6] = &set_square;
+	set_fcts[7] = &set_cylinder;
+	set_fcts[8] = &set_triangle;
+
+	return (&set_fcts[0]);
+}
+
+
+bool	set_element(t_scene *scene, char **elem_attributes){
+	int		enum_val;
+	static uint8_t	elem_num = 0;
+	bool		(**set_fcts)(char **attributes, t_scene *scene,
+				     uint8_t elem_num);
+
+	enum_val = id_index(elem_attributes[0]);
+	set_fcts = set_fcts_init();
+	if (enum_val >= 0 && enum_val <= __ELEM_TOTAL && elem_num < 100){
+		if (!set_fcts[enum_val](elem_attributes, scene, elem_num))
+			return(false);
+		return (true);
+	}
+	return (false);
+}
+
+t_scene	get_scene(int fd){
+	int	ret;
+	char	*line;
+	char	**elem_attributes;
+	t_scene scene;
+
+	while ((ret = get_next_line(fd, &line)) > 0){
+		if (line[0] != '\0'){
+			elem_attributes = ft_split(line, ' ');
+			if (set_element(&scene, elem_attributes) == false)
+				scene.scene_is_set = false;
+			while (*elem_attributes)
+				ft_memdel(*elem_attributes);
+			free(elem_attributes);
+		}
+		ft_memdel(line);
+	}
+	if (scene.scene_is_set != false)
+		scene.scene_is_set = true;
+	return (scene);
+}
+
+bool	parse_scene(int ac, char **av, t_scene *scene){
+	int	fd;
+
+	if (ac == 2 || ac == 3){
+		if (ft_compare_strs(av[1] + ft_strlen(av[1]) - 3, ".rt") != 1)
+			return (ft_error(0));
+		fd = open(av[1], O_RDONLY);
+		*scene = get_scene(fd);
+		close(fd);
+		if (scene->scene_is_set == false)
+			return (ft_error(0));
+		if (ac == 3){
+			if (ft_compare_strs(av[2], "-save") != 1)
+				return (ft_error(1));
+			//	ft_put_image(scene);
+		}	
+	}
+	else
+		return(ft_error(1));
+	return (true);
+}

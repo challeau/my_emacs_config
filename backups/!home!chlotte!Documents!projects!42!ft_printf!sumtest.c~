@@ -1,0 +1,18 @@
+#include "ft_printf.h"
+#include <stdio.h>
+
+int main (void)
+{
+	ft_printf("%.*i", 6, -3);
+	ft_printf("%0*i", 7, -54);
+	ft_printf("%*s", -32, "abc");
+	ft_printf("%-*s", -32, "abc");
+	ft_printf("%*s", -3, "hello");
+	ft_printf("%.*s", -3, "hello");
+	ft_printf("%-*.*s", -7, -3, "yolo");
+	ft_printf("%*i", -4, 94827);
+	ft_printf("%*i", -14, 94827);
+	ft_printf("%.*i", -6, -3);
+	ft_printf("%0*i", -7, -54);
+
+}

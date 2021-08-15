@@ -1,0 +1,159 @@
+#include "../../inc/minirt.h"
+
+bool	ft_error(int err){
+	switch (err)
+	{
+	case 1:
+		printf("yikes, there's an error with your arguments.\n");
+		break ;
+	case 2:
+		printf("oof, not a .rt file!\n");
+		break ;
+	case 3:
+		printf("ahhh, attributes in your .rt file are incorrect.\n");
+		break ;
+	case 5:
+		printf("mmh, cannot read your .rt file.\n");
+		break ;
+	default :
+		printf("oops, thats a weird mistake...\n");
+	}
+	exit(0);
+	return (false);
+}
+
+bool	(**obj_set_fcts_init(void))(char **attributes, t_scene *scene,
+				uint8_t *elem_num)
+{
+	static bool	(*obj_set_fcts[6])(char **attributes,
+					t_scene *scene, uint8_t *elem_num);
+
+	obj_set_fcts[0] = &set_light;
+	obj_set_fcts[1] = &set_sphere;
+	obj_set_fcts[2] = &set_plane;
+	obj_set_fcts[3] = &set_square;
+	obj_set_fcts[4] = &set_cylinder;
+	obj_set_fcts[5] = &set_triangle;
+
+	return (&obj_set_fcts[0]);
+}
+
+int	id_index(const char *id){
+	int			i;
+        static const char	*elem_id_array[__OBJ_TOTAL + 3] = {
+		"R", "A", "c", "l", "sp", "pl", "sq", "cy", "tr"};
+
+	i = 0;
+	while (i < __OBJ_TOTAL){
+		if (ft_compare_strs(id, elem_id_array[i]) == 1)
+			return (i);
+		i++;
+	}
+	return (-1);
+}
+
+void	alloc_scene_lists(t_scene *scene)
+{
+	uint8_t		i;
+	t_cam		default_cam;
+	t_object	none_obj;
+
+	i = 0;
+	default_cam = (t_cam){.pos = {0.0, 1.0, 0.0}, .dir = {0.0, 0.0, 1.0}};
+	none_obj = (t_object){.type = e_OBJ_NONE};
+	scene->cam_ref = 0;
+	scene->cam_list = (t_cam *)malloc(10 * sizeof(t_cam));
+	while (i < 10)
+	{
+		scene->cam_list[i] = default_cam;
+		i++;
+	}
+	i = 0;
+	scene->obj_list = (t_object *)malloc(20 * sizeof(t_object));
+	while (i < 20)
+	{
+		scene->obj_list[i] = none_obj;
+		i++;
+	}
+}
+
+bool	assign_element(t_scene *scene, char **attributes, void *mlx_ptr)
+{
+	int		enum_val;
+	static uint8_t	obj_num = 0;
+	bool		(**obj_set_fcts)(char **attributes, t_scene *scene,
+					 uint8_t *obj_num);
+
+	enum_val = id_index(attributes[0]);
+	obj_set_fcts = obj_set_fcts_init();
+	if (enum_val >= 0 && enum_val < 3)
+	{
+		if (enum_val == 0)
+			return (set_res(scene, attributes, mlx_ptr));
+		else if (enum_val == 1)
+			return(set_ambl(scene, attributes));
+		else if (enum_val == 2)
+			return(set_cam(scene, attributes));
+	}
+	else if (enum_val != -1)
+		return (obj_set_fcts[enum_val -3](attributes, scene, &obj_num));
+	return (false);
+}
+
+bool	get_scene(int fd, t_scene *scene, void *mlx_ptr)
+{
+	int	ret;
+	char	*line;
+	char	**obj_attributes;
+	char	**obj_attributes_ptr;
+
+	ret = 1;
+	alloc_scene_lists(scene);
+	while ((ret = get_next_line(fd, &line)) > 0)
+	{
+		if (line[0] != '\0')
+		{
+			obj_attributes = ft_split(line, ' ');
+			printf("%s\n", *obj_attributes);
+			if (assign_element(scene, obj_attributes, mlx_ptr) == false)
+				return (ft_error(3));
+			obj_attributes_ptr = obj_attributes;
+			while (*obj_attributes_ptr != NULL)
+			{
+				ft_memdel(*obj_attributes_ptr);
+				obj_attributes_ptr++;
+			}
+			//	free(obj_attributes);
+		}
+		ft_memdel(line);
+	}
+	if (ret == -1)
+		return (ft_error(4));
+	return (true);
+}
+
+bool	scene_parser(int ac, char **av, t_scene *scene, void *mlx_ptr)
+{
+	bool	scene_is_set;
+	int	fd;
+
+	if (ac == 2 || ac == 3)
+	{
+		if (ft_compare_strs(av[1] + ft_strlen(av[1]) - 3, ".rt") != 1)
+			return (ft_error(2));
+		fd = open(av[1], O_RDONLY);
+		scene_is_set = get_scene(fd, scene, mlx_ptr);
+		close(fd);
+		if (scene_is_set == false)
+			return (ft_error(3));
+		if (ac == 3)
+		{
+			if (ft_compare_strs(av[2], "-save") != 1)
+				return (ft_error(1));
+			//	ft_put_image(scene);
+		}
+	}
+	else
+		return(ft_error(1));
+	return (true);
+}

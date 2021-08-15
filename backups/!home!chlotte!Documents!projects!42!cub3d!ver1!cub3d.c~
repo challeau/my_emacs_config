@@ -1,0 +1,10 @@
+#include "cub3d.h"
+
+int	ft_exit(int keycode, void *param)
+{
+	t_mlx	*mlx;
+
+	mlx = (t_mlx*)param;
+	if (keycode == 65307)
+		exit(0);
+}

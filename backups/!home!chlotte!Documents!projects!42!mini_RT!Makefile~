@@ -1,0 +1,65 @@
+NAME		=	minirt
+
+SRC_PATH	=	srcs
+SRC_NAME	=	minirt.c	\
+			image_fcts.c	\
+			key_fcts.c
+
+SRC_PARSER_PATH	=	srcs/parser
+SRC_PARSER_NAME	=	parser.c	\
+			env_set_fcts.c	\
+			obj_set_fcts.c	\
+			parser_tools.c	\
+			obj_lst_fcts.c
+
+SRC_RAYMC_PATH	=	srcs/raymarcher
+SRC_RAYMC_NAME	=	raymarcher.c	\
+	 		get_light.c	\
+			sdf_fcts.c
+
+SRC_TOOLS_PATH	=	srcs/tools
+SRC_TOOLS_NAME	=	vectr_fcts.c	\
+			float_tools.c
+
+OBJ_PATH	=	objs
+OBJ_NAME	=	$(SRC_NAME:.c=.o)
+
+CC		=	clang
+CFLAGS		=	-Wall -Werror -Wextra 
+
+CPPFLAGS	=	-I Libft/ -I minilibx-linux/
+
+LDFLAGS		=	Libft/libft.a minilibx-linux/libmlx_Linux.a
+LDLIBS		=	-lmlx -lm -lX11 -lXext
+
+SRC = $(addprefix $(SRC_PATH)/,$(SRC_NAME))
+SRC_PARSER = $(addprefix $(SRC_PARSER_PATH)/,$(SRC_PARSER_NAME))
+SRC_RAYMC = $(addprefix $(SRC_RAYMC_PATH)/,$(SRC_RAYMC_NAME))
+SRC_TOOLS = $(addprefix $(SRC_TOOLS_PATH)/,$(SRC_TOOLS_NAME))
+OBJ = $(addprefix $(OBJ_PATH)/,$(OBJ_NAME))
+
+all: $(NAME)
+
+$(NAME): $(OBJ)
+	@make -C Libft
+	@make -C minilibx-linux
+	@$(CC) $^ -o $@ $(LDFLAGS) $(LDLIBS)
+	@echo "Compilation \033[1;32mOK\033[m"
+
+$(OBJ_PATH)/%.o: $(SRC_PATH)/%.c $(SRC_PARSER_PATH)/%.c $(SRC_RAYMC_PATH)/%.c $(SRC_TOOLS_PATH)/%.c
+	@mkdir $(OBJ_PATH) 2> /dev/null || true
+	@$(CC) $(CFLAGS) -c $< $(CPPFLAGS) -o $@
+
+clean:
+	@make -C Libft clean
+	@rm -f $(OBJ)
+	@rmdir $(OBJ_PATH) 2> /dev/null || true
+	@echo "Removing objs"
+
+fclean: clean
+	@make -C Libft fclean
+	@rm -f $(NAME)
+
+re: fclean all
+
+.PHONY: all, clean, fclean, re

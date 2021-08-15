@@ -1,0 +1,37 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_dec_to_base.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: challeau <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/03/11 01:42:42 by challeau          #+#    #+#             */
+/*   Updated: 2020/03/11 01:42:45 by challeau         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "tools.h"
+
+char	*ft_dec_to_base(bool cap, unsigned long num, unsigned int base_len)
+{
+    int		i;
+    char	base[16] = "0123456789ABCDEF";
+    char	*dst;
+
+    i = 0;
+    if (!(dst = (char *)malloc(ft_intlen(num) + 1)))
+	return (NULL);
+    while (num != 0)
+    {
+	if (num < base_len)
+	    dst[i++] = base[num];
+	else
+	    dst[i++] = base[num % base_len];
+	num /= base_len;
+    }
+    dst[i] = '\0';
+    ft_strrev(dst);
+    if (cap == false)
+	ft_strlowcase(dst);
+    return (dst);
+}

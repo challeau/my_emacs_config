@@ -1,0 +1,88 @@
+#include "../../minirt.h"
+
+bool	set_sphere(char **attributes, t_scene *scene, size_t elem_num){
+	t_object	new;
+
+	if (!check_attributes_num(attributes, 4)){
+		return (false);
+	}
+	if (!parse_position(attributes[1], &new.pos))
+		return ((t_object){.type = e_ELEM_NONE});
+	new.data.sphere.r = ft_atof(attributes[2]);
+	if (new.data.sphere.r < 0.)
+		return ((t_object){.type = e_ELEM_NONE});
+	if (!parse_color(attributes[3], &new.color))
+		return ((t_object){.type = e_ELEM_NONE});
+	return (new);
+}
+
+t_object	set_plane(char **attributes, t_scene *scene, size_t elem_num){
+	t_object	new;
+
+	if (!check_attributes_num(attributes, 4))
+		return ((t_object){.type = e_ELEM_NONE});
+	if (!parse_position(attributes[1], &new.pos))
+		return ((t_object){.type = e_ELEM_NONE});
+	if (!parse_orientation(attributes[2], &new.data.plane.orientation))
+		return ((t_object){.type = e_ELEM_NONE});
+	if (!parse_color(attributes[3], &new.color))
+		return ((t_object){.type = e_ELEM_NONE});
+	return (new);
+}
+
+t_object	set_square(char **attributes, t_scene *scene, size_t elem_num){
+	t_object	new;
+
+	if (!check_attributes_num(attributes, 5))
+		return ((t_object){.type = e_ELEM_NONE});
+	if (!parse_position(attributes[1], &new.pos))
+		return ((t_object){.type = e_ELEM_NONE});
+	if (!parse_orientation(attributes[2], &new.data.square.orientation))
+		return ((t_object){.type = e_ELEM_NONE});
+	new.data.square.l = ft_atof(attributes[3]);
+	if (new.data.square.l < 0.)
+		return ((t_object){.type = e_ELEM_NONE});
+	if (!parse_color(attributes[4], &new.color))
+		return ((t_object){.type = e_ELEM_NONE});
+	return (new);
+}
+
+t_object	set_cylinder(char **attributes, t_scene *scene, size_t elem_num){
+	t_object	new;
+
+	if (!check_attributes_num(attributes, 6))
+		return ((t_object){.type = e_ELEM_NONE});
+	if (!parse_position(attributes[1], &new.pos))
+		return ((t_object){.type = e_ELEM_NONE});
+	if (!parse_orientation(attributes[2], &new.data.plane.orientation))
+		return ((t_object){.type = e_ELEM_NONE});
+	new.data.cylinder.r = ft_atof(attributes[3]);
+	new.data.cylinder.l = ft_atof(attributes[4]);
+	if (new.data.cylinder.r < 0. || new.data.cylinder.l < 0.)
+		return ((t_object){.type = e_ELEM_NONE});
+	if (!parse_color(attributes[5], &new.color))
+		return ((t_object){.type = e_ELEM_NONE});
+	return (new);
+
+}
+
+t_object	set_triangle(char **attributes, t_scene *scene, size_t elem_num){
+	t_object	new;
+	t_vec3		p1;
+	t_vec3		p2;
+	t_vec3		p3;
+
+	if (!check_attributes_num(attributes, 5))
+		return ((t_object){.type = e_ELEM_NONE});
+	if (!parse_position(attributes[1], &p1))
+		return ((t_object){.type = e_ELEM_NONE});
+	if (!parse_position(attributes[2], &p2))
+		return ((t_object){.type = e_ELEM_NONE});
+	if (!parse_position(attributes[3], &p3))
+		return ((t_object){.type = e_ELEM_NONE});
+	new.pos = (t_vec3){(p1.x + p2.x + p3.x) / 3, (p1.y + p2.y + p3.y) / 3,
+			   (p1.z + p2.z + p3.z) / 3};
+	if (!parse_color(attributes[4], &new.color))
+		return ((t_object){.type = e_ELEM_NONE});
+	return (new);
+}

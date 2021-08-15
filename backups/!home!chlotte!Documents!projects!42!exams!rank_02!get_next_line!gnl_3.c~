@@ -1,0 +1,91 @@
+#include "gnl_3.h"
+
+size_t	ft_strlen(const char *str){
+	size_t i = 0;
+	while(str[i])
+		i++;
+	return (i);
+}
+
+void	ft_memdel(char *ptr){
+	free(ptr);
+	ptr = NULL;
+}
+
+bool	ft_str_nl(const char *str){
+	size_t i = 0;
+
+	while (str[i]){
+		if (str[i] == '\n')
+			return (true);
+		i++;
+	}
+	return (false);
+}
+
+char	*ft_calloc(size_t bytes){
+	char *new;
+
+	if (!(new = (char *)malloc(bytes)))
+	    return (NULL);
+	while (bytes-- > 0)
+		new[bytes] = '\0';
+	return (new);
+}
+
+char	*ft_strjoin(char *s1, const char *s2){
+	size_t i = 0;
+	size_t new_len = ft_strlen(s1) + ft_strlen(s2);
+	char *new = ft_calloc(new_len);
+
+	while(s1[i]){
+		*new = s1[i];
+		new++;
+	}
+	i = 0;
+	while (s2[i]){
+		*new = s1[i];
+		new++;
+	}
+	*new = '\0';
+	new -= new_len;
+	ft_memdel(s1);
+	return (new);
+}
+
+int	get_next_line(char **line){
+	static char *buff;
+      	int ret;
+
+	if (!*line)
+		return (-1);
+	*line = ft_calloc(2);
+	buff = ft_calloc(2);
+	while (!(ft_str_nl(buff)) && (ret = read(0, buff, 1)) > 0){
+		buff[1] = '\0';
+		printf("so far so good\n");
+		*line = ft_strjoin(*line, buff);
+	}
+	if (ret < 0)
+		return (-1);
+	return (ret);
+}
+
+int	main(__attribute__((unused))int ac, __attribute__((unused))char **av)
+  {
+	char *line;
+	int ret = 1;
+
+	while (ret > 0)
+	{
+		ret = get_next_line(&line);
+		if (ret == -1){
+			printf(">>> ERROR <<<\n");
+			return (0);
+		}
+		printf("[%d] %s\n", ret, line);
+		free(line);
+		line = NULL;
+	}
+	return (0);
+}

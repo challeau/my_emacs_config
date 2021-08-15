@@ -1,0 +1,25 @@
+#include "../inc/minirt.h"
+
+void	write_to_image(t_rgb color, t_vec2f pixel, t_mlx_img *img){
+	int	bpp;
+	int	size_line;
+	int	endian;
+	size_t	pos;
+
+	img->img_data = mlx_get_data_addr(img->img_ptr, &bpp, &size_line, &endian);
+	pos = (pixel.y * size_line) + pixel.x * bpp / 8;
+	if (endian == 0)		// least significant byte fist (blue)
+	{
+		img->img_data[pos] = (int)color.z;
+		img->img_data[pos + 1] = (int)color.y;
+		img->img_data[pos + 2] = (int)color.x;
+		img->img_data[pos + 3] = 0;
+	}
+	else if (endian == 1)		// most significant byte first (alpha)
+	{
+		img->img_data[pos] = 0;
+		img->img_data[pos + 1] = (int)color.x;
+		img->img_data[pos + 2] = (int)color.y;
+		img->img_data[pos + 2] = (int)color.z;
+	}
+}

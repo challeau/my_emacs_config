@@ -1,0 +1,95 @@
+#ifndef FT_PRINTF_H
+#define FT_PRINTF_H
+
+#include <limits.h>
+#include <stdarg.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+
+# define buff_sz 256
+
+/* FLAG AND CONV DEF */
+/* align = 0 >> right	"    abc" */
+/* align = 1 >> left	"abc    " */
+/* align = 2 >> 0	"0000123" */
+
+typedef struct	s_flags
+{
+    int align;
+    int width;
+    int prec;
+}		t_flags;
+
+typedef enum	e_flag
+{
+    F_hyphen = 1,
+    F_number,
+    F_period,
+    F_asterisk
+}		t_flag;
+
+typedef enum	e_conv
+{
+    C_c = 1,
+    C_s,
+    C_p,
+    C_d,
+    C_i,
+    C_u,
+    C_x,
+    C_X
+}		t_conv;
+
+/* SRC */
+/* BUFF FCTS */
+char		*ft_init_buff(void);
+void		ft_flush_buff(char *buff, int *char_count);
+int		ft_fill_buff(char **buff, char *to_add, int *char_count);
+
+/* CONV FCTS */
+int		c_conv(va_list args, t_flags flags, char **buff, int *c_count);
+int		s_conv(va_list args, t_flags flags, char **buff, int *c_count);
+int		p_conv(va_list args, t_flags flags, char **buff, int *c_count);
+int		d_conv(va_list args, t_flags flags, char **buff, int *c_count);
+int		i_conv(va_list args, t_flags flags, char **buff, int *c_count);
+int		u_conv(va_list args, t_flags flags, char **buff, int *c_count);
+int		x_conv(va_list args, t_flags flags, char **buff, int *c_count);
+int		X_conv(va_list args, t_flags flags, char **buff, int *c_count);
+
+/* FLAG FCTS */
+int		f_align(const char **format);
+int		f_width(const char **format, va_list args);
+int		f_prec(const char **format, va_list args);
+
+/* TOOLS */
+/* int		ft_strchr_index(const char *str, char c); */
+/* size_t		ft_strlcat(char *dst, const char *src, size_t size); */
+/* int		ft_strnlen(char *str, size_t n); */
+/* char		*ft_strncpy(char *dest, char *src, unsigned int n); */
+
+/* int		ft_strcmp(char *s1, char *s2); */
+/* void		ft_strrev(char *str); */
+
+void		ft_memdel(void *ptr);
+char		*ft_realloc(char *src, size_t new_sz);
+char		*ft_strjoin(char const *s1, char const *s2);
+int		ft_intlen(long num);
+size_t		ft_strlcpy(char *dst, const char *src, size_t size);
+char		*ft_strdup(const char *src);
+int		ft_strlen(const char *str);
+void		ft_strlowcase(char *str);
+void		ft_bzero(char *str, size_t n);
+char		*ft_dec_to_base(bool cap, unsigned long num, unsigned int base_len);
+char		*ft_itoa(int n);
+void		ft_putstr_fd(char *s, int fd);
+char		*ft_strcat(char *dst, char *src);
+char		*ft_utoa(unsigned int num);
+size_t		ft_strlcat(char *dst, const char *src, size_t size);
+
+char		*ft_char_to_str(char c);
+char		*ft_add_spaces(char *src, int to_add_len, int align);
+char		*ft_add_zeros(char *src, int to_add_len);
+
+#endif

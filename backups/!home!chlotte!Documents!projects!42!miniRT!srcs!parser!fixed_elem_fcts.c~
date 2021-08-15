@@ -1,0 +1,64 @@
+#include "../../minirt.h"
+
+bool	set_res(char **attributes, t_scene *scene, __attribute((unused))__uint8_t elem_num){
+	int	x;
+	int	y;
+
+	if (!check_attributes_num(attributes, 3))
+		return (false);
+	x = ft_atoi(attributes[1]);
+	y = ft_atoi(attributes[2]);
+	if (x <= 0 || y <= 0)
+		return (false);
+	scene->window_res.x = x;
+	scene->window_res.y = y;
+	return (true);
+}
+
+bool	set_ambl(char **attributes, t_scene *scene, __attribute((unused))__uint8_t elem_num){
+	float ratio;
+
+	if (!check_attributes_num(attributes, 3))
+		return (false);
+	ratio = ft_atof(attributes[1]);
+	if (ratio < 0.0 || ratio > 1.0)
+		return (false);
+	scene->amb_light.ratio = ratio;
+	if (!get_elem_color(attributes[2], &scene->amb_light.color))
+		return (false);
+	return (true);
+}
+
+bool	set_cam(char **attributes, t_scene *scene, uint8_t elem_num){
+	t_scene_element	new;
+
+	if (!check_attributes_num(attributes, 4))
+		return (false);
+	if (!get_elem_position(attributes[1], &new.pos))
+		return (false);
+	if (!get_elem_orientation(attributes[2], &new.data.cam.orientation))
+		return (false);
+	new.data.cam.fov = ft_atoi(attributes[3]);
+	if (new.data.cam.fov < 0 || new.data.cam.fov > 180)
+		return (false);
+	scene->elem_list[elem_num] = new;
+	elem_num++;
+	return (true);
+}
+
+bool	set_light(char **attributes, t_scene *scene, uint8_t elem_num){
+	t_scene_element	new;
+
+	if (!check_attributes_num(attributes, 4))
+		return (false);
+	if (!get_elem_position(attributes[1], &new.pos))
+		return (false);
+	new.data.light.ratio = ft_atof(attributes[2]);
+	if (new.data.light.ratio < 0. || new.data.light.ratio > 1.)
+		return (false);
+	if (!get_elem_color(attributes[3], &new.color))
+		return (false);
+	scene->elem_list[elem_num] = new;
+	elem_num++;
+	return (true);
+}

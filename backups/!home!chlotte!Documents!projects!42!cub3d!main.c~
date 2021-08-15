@@ -1,0 +1,30 @@
+#include "cub3d.h"
+#include <stdlib.h>
+#include <stdio.h>
+
+int	main(__attribute__((unused))int ac, __attribute__((unused))char **av)
+{
+	/* int x = atoi(av[1]); */
+	/* int y = atoi(av[2]); */
+	/* int x2 = atoi(av[3]); */
+	/* int y2 = atoi(av[4]); */
+	struct s_mlx_obj mlx;
+
+	/* printf("%d\n", x); */
+	/* printf("%d\n", y); */
+	mlx.mlx_ptr = mlx_init();
+	if ((mlx.win_ptr = mlx_new_window(mlx.mlx_ptr, screen_width, screen_height, "test")) != NULL)
+	{
+		draw_line_oct2(mlx, (struct s_point){320, 240}, (struct s_point){640, 0}, WHITE);
+		draw_line_oct2(mlx, (struct s_point){320, 240}, (struct s_point){640, 120}, BLUE);
+		draw_line_oct2(mlx, (struct s_point){320, 240}, (struct s_point){640, 240}, YELLOW);
+//		draw_line_oct2(mlx, (struct s_point){320, 240}, (struct s_point){320, 0}, GREEN);
+		draw_line_oct2(mlx, (struct s_point){320, 240}, (struct s_point){0, 0}, RED);
+		draw_line_oct2(mlx, (struct s_point){320, 240}, (struct s_point){0, 240}, GRAY);
+		draw_line_oct2(mlx, (struct s_point){320, 240}, (struct s_point){0, 480}, RED);
+		draw_line_oct2(mlx, (struct s_point){320, 240}, (struct s_point){480, 320}, GREEN);
+	}
+	mlx_loop(mlx.mlx_ptr);
+	return (0);
+}
+

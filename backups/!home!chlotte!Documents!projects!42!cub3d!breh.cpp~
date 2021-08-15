@@ -1,0 +1,18 @@
+void linev6(Screen &s,
+	    unsigned x1, unsigned y1,
+	    unsigned x2, unsigned y2,
+	    unsigned char colour )
+{
+	int dx  = x2 - x1,
+		dy  = y2 - y1,
+		y   = y1,
+		eps = 0;
+	
+	for ( int x = x1; x <= (int)x2; x++ )  {
+		s.Plot(x,y,colour);
+		eps += dy;
+		if ( (eps << 1) >= dx )  {
+			y++;  eps -= dx;
+		}
+	}
+}

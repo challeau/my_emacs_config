@@ -1,0 +1,3 @@
+#!/bin/sh
+
+coredumpctl list | tail -n1

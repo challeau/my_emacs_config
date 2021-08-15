@@ -1,0 +1,16 @@
+#include "ft_printf.h"
+
+void	ft_strrev(char *str)
+{
+	int		i;
+	int		len;
+	char	c;
+	i = -1;
+	len = ft_strlen(str);
+	while (++i < --len)
+	{
+		c = str[i];
+		str[i] = str[len];
+		str[len] = c;
+	}
+}

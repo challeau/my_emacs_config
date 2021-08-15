@@ -1,0 +1,31 @@
+#include "gnl_3.h"
+
+size_t	ft_strlen(const char *str){
+	size_t i = 0;
+
+	while (str[i])
+		i++;
+	return (i);
+}
+
+void	ft_memdel(char *ptr){
+	if (ptr){
+		free (ptr);
+		ptr = NULL;
+	}
+}
+
+int	get_next_line(char **line){
+	int	ret;
+	char	*buff;
+
+	buff = ft_calloc(2);
+	*line = ft_calloc(2);
+	while (buff != NULL && (ret = read(0, buff, 1)) > 0){
+		if (*buff == '\n')
+			break ;
+		*line = ft_add_char(*line, *buff);
+	}
+	ft_memdel(buff);
+	return (ret);
+}

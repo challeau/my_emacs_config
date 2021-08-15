@@ -1,0 +1,13 @@
+#include "../minirt.h"
+
+int	ft_exit(int keycode, void *param)
+{
+	t_mlx_obj *mlx;
+
+	mlx = param;
+	if (keycode == ESC){
+		mlx_destroy_window(mlx->mlx_ptr, mlx->win_ptr);
+		exit(0);
+	}
+	return (1);
+}

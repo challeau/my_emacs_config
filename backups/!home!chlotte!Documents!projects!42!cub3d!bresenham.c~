@@ -1,0 +1,199 @@
+#include "cub3d.h"
+
+//TO DO:
+//- check if slope == 0 >>>>>>> vertical line not supported by bresenham 
+//- function that assigns p1 and p2 to fit format
+/*
+maths: http://www.math.ubc.ca/~cass/courses/m308-02b/projects/puhalovic/index.html#Introduction
+https://www.cs.helsinki.fi/group/goa/mallinnus/lines/bresenh.html
+starting from p1 we will decide wether to draw the pixel to its direct right, or the one right-up.
+p(k) -the decision variable- allows all integer operations for faster and efficient computing.
+from p(k) we can determine p(0): since line entity is linear in its nature, pk change will be
+linear as well, therefore we can evaluate subsequent pk values incrementally by finding a constant
+change in pk for each subsequent pixel.
+here pk1 for the pixel to the right, pk2 for the pixel to the right and up.
+*/
+
+typedef struct	s_line{
+	struct s_point	p1;
+	struct s_point	p2;
+	int		dx;
+	int		dy;
+	int		m;
+}		t_line;
+
+void	ft_init_line(struct s_line *line, struct s_point p1, struct s_point p2)
+{
+	if (p1.x > p2.x){
+	p1.x += p2.x;		//swaps x values
+	p2.x = p1.x - p2.x;
+	p1.x -= p2.x;
+	p1.y += p2.y;		//swaps y values
+	p2.y = p1.y - p2.y;
+	p1.y -= p2.y;
+	}
+	line->p1 = p1;
+	line->p2 = p2;
+	line->dx = p2.x - p1.x;
+	line->dy = p2.y - p1.y;
+	line->m = (line->dx !=0 && line->dy != 0) ? line->dy / line->dx : -1;
+
+}
+
+// any vertical line, m == 0, (x1 < x2 && y1 == y2) or (x1 == x2 && y1 < y2)
+void	ft_neg_slope_line(struct s_mlx_obj mlx, struct s_line line, int rgb)
+{
+	while (line.p1.x <= line.p2.x || line.p1.y <= line.p2.y){
+		mlx_pixel_put(mlx.mlx_ptr, mlx.win_ptr, line.p1.x, line.p1.y, rgb);
+		if (line.p1.x <= line.p2.x)
+			line.p1.x++;
+		else if (line.p1.y <= line.p2.y)
+			line.p1.y++;
+	}
+}
+
+void	ft_bresenham_draw_downl(struct s_mlx_obj mlx, struct s_point p1, struct s_point p2, int color)
+{
+	uint8_t	dx;
+	uint8_t	dy;
+	uint8_t p;
+
+	dx = p2.x - p1.x;
+	dy = p2.y - p1.y;
+	p = 2 * dy - dx;
+	printf("downl\n");
+	while (p1.x <= p2.x){
+		mlx_pixel_put(mlx.mlx_ptr, mlx.win_ptr, p1.x, p1.y, color);
+		if (p > 0){     //pixel to right-up is chosen
+			p1.y--;
+			p += (dy << 1) - (dx << 1);
+		}
+		else            //pixel to right is chosen
+			p += (dy << 1);
+		p1.x++;
+	}
+}
+
+void	ft_bresenham_draw_downr(struct s_mlx_obj mlx, struct s_point p1, struct s_point p2, int color)
+{
+	int dx;
+	int dy;
+	int p;
+
+	dx = p2.x - p1.x;
+	dy = p2.y - p1.y;
+	p = 2 * dy - dx;
+	printf("downr\n");
+	while (p1.x <= p2.x){
+		mlx_pixel_put(mlx.mlx_ptr, mlx.win_ptr, p1.x, p1.y, color);
+		if (p > 0){     //pixel to right-up is chosen
+			p1.y++;
+			p += (dy << 1) - (dx << 1);
+		}
+		else            //pixel to right is chosen
+			p += dy << 1;
+		p1.x++;
+	}
+}
+
+void	ft_bresenham_draw_upl(struct s_mlx_obj mlx, struct s_point p1, struct s_point p2, int color)
+{
+	uint8_t	dx;
+	uint8_t	dy;
+	uint8_t p;
+
+	dx = p2.x - p1.x;
+	dy = p2.y - p1.y;
+	p = 2 * dy - dx;
+	printf("up\n");
+	while (p1.y <= p2.y){
+		mlx_pixel_put(mlx.mlx_ptr, mlx.win_ptr, p1.x, p1.y, color);
+		if (p > 0){     //pixel to right-up is chosen
+			p1.x++;
+			p += (dy << 1) - (dx << 1);
+		}
+		else            //pixel to right is chosen
+			p += (dy << 1);
+		p1.y++;
+	}
+}
+
+
+void	ft_bresenham_draw_upr(struct s_mlx_obj mlx, struct s_point p1, struct s_point p2, int color)
+{
+	uint8_t	dx;
+	uint8_t	dy;
+	uint8_t p;
+
+	dx = p2.x - p1.x;
+	dy = p2.y - p1.y;
+	p = 2 * dy - dx;
+	printf("upr\n");
+	while (p1.x <= p2.x){
+		mlx_pixel_put(mlx.mlx_ptr, mlx.win_ptr, p1.x, p1.y, color);
+		if (p > 0){     //pixel to right-up is chosen
+			p1.y++;
+			p += (dy << 1) - (dx << 1);
+		}
+		else            //pixel to right is chosen
+			p += (dy << 1);
+		p1.x++;
+	}
+}
+
+// (640, 240) to (640, 480), -1 <= m <= 0, x1 < x2
+// slope: if the angle btw the x axis and the line is equal to 45, m == 0. if the angle is bigger than 45,
+// m > 0, and if it is smaller, m < 0.
+void	ft_bresenham(struct s_mlx_obj mlx, struct s_line line, int rgb)
+{
+	int p;
+
+	p = 2 * line.dy - line.dx;
+	if (line.dx == 0 || line.dy == 0)
+		ft_neg_slope_line(mlx, line, rgb);
+	while (line.p1.x <= line.p2.x){
+		mlx_pixel_put(mlx.mlx_ptr, mlx.win_ptr, line.p1.x, line.p1.y, rgb);
+		if (p > 0){     //pixel to right-up is chosen
+			line.p1.y++;
+			p += (line.dy << 1) - (line.dx << 1);
+		}
+		else            //pixel to right is chosen
+			p += line.dy << 1;
+		line.p1.x++;
+	}
+}
+
+int	main(__attribute__((unused))int ac, __attribute__((unused))char **av)
+{
+	struct s_mlx_obj mlx;
+	struct s_line l1;
+	struct s_line l2;
+	struct s_line l3;
+	struct s_line l4;
+	struct s_line l5;
+	struct s_line l6;
+	struct s_line l7;
+
+	mlx.mlx_ptr = mlx_init();
+	ft_init_line(&l1, (struct s_point){320, 0}, (struct s_point){320, 480});
+	ft_init_line(&l2, (struct s_point){0, 240}, (struct s_point){640, 240});
+	ft_init_line(&l3, (struct s_point){640, 480}, (struct s_point){0, 0});
+	ft_init_line(&l4, (struct s_point){640, 0}, (struct s_point){0, 480});
+	ft_init_line(&l5, (struct s_point){160, 0}, (struct s_point){160, 480});
+	ft_init_line(&l6, (struct s_point){480, 0}, (struct s_point){160, 480});
+	ft_init_line(&l7, (struct s_point){33, 45}, (struct s_point){35, 50});
+	if ((mlx.win_ptr = mlx_new_window(mlx.mlx_ptr, screen_width, screen_height, "test")) != NULL)
+	{
+		mlx_pixel_put(mlx.mlx_ptr, mlx.win_ptr, 33, 44, GREEN);
+		ft_bresenham(mlx, l1, WHITE);
+		ft_bresenham(mlx, l2, WHITE);
+		ft_bresenham(mlx, l3, BLUE);
+		ft_bresenham(mlx, l4, BLUE);
+		ft_bresenham(mlx, l5, RED);
+		ft_bresenham(mlx, l6, RED);
+		ft_bresenham(mlx, l7, YELLOW);
+	}
+	mlx_loop(mlx.mlx_ptr);
+	return (0);
+}
+

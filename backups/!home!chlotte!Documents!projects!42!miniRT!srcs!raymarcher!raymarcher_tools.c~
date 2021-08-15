@@ -1,0 +1,36 @@
+#include "../../inc/minirt.h"
+
+t_rgb	float_to_rgb(float value){
+	float r;
+	float g;
+	float b;
+
+	r = value;
+	g = ft_mod(value * 256, 1.0);
+	r -= g / 256;
+	b = ft_mod(value * 256 * 256, 1.0);
+	g -= b / 256;
+	return ((t_vec3f){r, g, b});
+}
+
+float	ft_get_min_dist(float obj_dists[20]){
+	size_t	i;
+	float	min_dist;
+
+	i = 0;
+	min_dist = MAX_DIST;
+	while(obj_dists[i]){
+		if (obj_dists[i] < min_dist)
+			min_dist = obj_dists[i];
+		i++;
+	}
+	return (min_dist);
+}
+
+t_vec3f	normalize_screen_coordinates(t_vec2f pixel, t_scene scene){
+	t_vec3f	uv;
+
+	uv = (t_vec3f){(pixel.x - 0.5 * scene.window_res.x) / scene.window_res.y,
+		      -((pixel.y - 0.5 * scene.window_res.y) / scene.window_res.y), 1};
+	return (uv);
+}

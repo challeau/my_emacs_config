@@ -1,0 +1,17 @@
+#include "tools.h"
+
+char *ft_realloc(char *src, size_t new_sz)
+{
+    char	*new;
+    size_t 	src_sz;
+
+    if (!src)
+	return ((char *)malloc(new_sz));
+    src_sz = ft_strlen(src);
+    if (new_sz <= src_sz)
+	return src;
+    new = (char *)malloc(new_sz);
+    ft_strncpy(new, src, src_sz);
+    ft_memdel(src);
+    return(new);
+}

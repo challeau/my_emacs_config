@@ -1,0 +1,73 @@
+#include "../../inc/minirt.h"
+
+bool	set_res(t_scene *scene, char **attributes, void *mlx_ptr){
+	t_vec2i win_res;
+	t_vec2i screen_res;
+
+	mlx_get_screen_size(mlx_ptr, &screen_res.x, &screen_res.y);
+	if (!check_attributes_num(attributes, 3))
+		return (false);
+	win_res.x = ft_atoi(attributes[1]);
+	win_res.y = ft_atoi(attributes[2]);
+	if (win_res.x <= 0 || win_res.y <= 0)
+		return (false);
+	if (win_res.x > screen_res.x)
+		win_res.x = screen_res.x;
+	if (win_res.y > screen_res.y)
+		win_res.y = screen_res.y;
+	scene->window_res.x = win_res.x;
+	scene->window_res.y = win_res.y;
+	return (true);
+}
+
+bool	set_ambl(t_scene *scene, char **attributes){
+	float ratio;
+
+	if (!check_attributes_num(attributes, 3))
+		return (false);
+	ratio = ft_atof(attributes[1]);
+	if (ratio < 0.0 || ratio > 1.0)
+		return (false);
+	scene->amb_light.ratio = ratio;
+	if (!get_elem_color(attributes[2], &scene->amb_light.color))
+		return (false);
+	return (true);
+}
+
+bool	set_cam(t_scene *scene, char **attributes)
+{
+	t_cam		new;
+
+	if (!check_attributes_num(attributes, 4))
+		return (false);
+	if (!get_elem_position(attributes[1], &new.pos))
+		return (false);
+	if (!get_elem_orientation(attributes[2], &new.dir))
+		return (false);
+	new.fov = ft_atoi(attributes[3]);
+	if (new.fov < 0 || new.fov > 180)
+		return (false);
+	if (scene->cam_ref < 1)
+		scene->cam_list[scene->cam_ref] = new;
+	scene->cam_ref++;
+	return (true);
+}
+
+bool	set_light(char **attributes, t_scene *scene, uint8_t *elem_num){
+	t_object new;
+
+	if (!check_attributes_num(attributes, 4))
+		return (false);
+	if (!get_elem_position(attributes[1], &new.pos))
+		return (false);
+	new.data.light.ratio = ft_atof(attributes[2]);
+	if (new.data.light.ratio < 0. || new.data.light.ratio > 1.)
+		return (false);
+	if (!get_elem_color(attributes[3], &new.color))
+		return (false);
+	new.type = e_OBJ_LIGHT;
+	if (*elem_num < 20)
+	    scene->obj_list[*elem_num] = new;
+	*elem_num += 1;
+	return (true);
+}

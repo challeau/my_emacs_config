@@ -1,0 +1,14 @@
+#include "libft.h"
+
+int	ft_char_count(char c, const char *str)
+{
+	int i;
+
+	i = -1;
+	while (*str)
+	{
+		if (*str == c)
+			i++;
+		str++;
+	}
+}

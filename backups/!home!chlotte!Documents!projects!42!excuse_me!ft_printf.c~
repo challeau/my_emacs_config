@@ -1,0 +1,61 @@
+/* ************************************************************************** */
+#include "ft_printf.h"
+
+char     conv_asso_tab[256] = {
+    ['c'] = C_c,
+    ['s'] = C_s,
+    ['p'] = C_p,
+    ['d'] = C_d,
+    ['i'] = C_i,
+    ['u'] = C_u,
+    ['x'] = C_x,
+    ['X'] = C_X
+};
+
+int	ft_conv_handler(const char **format, va_list args, char **buff, int *c_count)
+{
+    int        conv_spe;
+    t_flags    flg;
+    int    (*conv_fcts[])(va_list, t_flags, char **, int *) = {
+	c_conv, s_conv, p_conv, d_conv, i_conv, u_conv, x_conv, X_conv};
+
+    flg.align = f_align(format);
+    flg.width = f_width(format, args);
+    flg.prec = f_prec(format, args);
+    if (flg.width == INT_MIN || flg.width == INT_MAX)
+	return (0);
+    if (flg.width < 0)
+    {
+	flg.align = 1;
+	flg.width *= -1;
+    }
+    if ((conv_spe = conv_asso_tab[(int)**format] - 1) >= 0)
+	if ((*conv_fcts[conv_spe])(args, flg, buff, c_count) == 0)
+	    return (0);
+    return (1);
+}
+
+int    ft_printf(const char *format, ...)
+{
+    int        c_count;
+    char    *buff;
+    va_list    args;
+
+    c_count = 0;
+    buff = ft_init_buff();
+    va_start(args, format);
+    while (*format)
+    {
+	if (*format == '%' && format++)
+	{
+	    if (ft_conv_handler(&format, args, &buff, &c_count) == 0)
+		return (-1);
+	}
+	else if (ft_fill_buff(&buff, ft_char_to_str(*format), &c_count) == 0)
+	    return (-1);
+	format++;
+    }
+    ft_flush_buff(buff, &c_count);
+    va_end(args);
+    return (c_count);
+}

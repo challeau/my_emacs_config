@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: main, inserts the skeletton of a C program main
+# key: main
+# binding: C-c m
+# --
+
+int	main(__attribute__((unused))int ac, __attribute__((unused))char **av)
+{
+
+	return (0);
+}

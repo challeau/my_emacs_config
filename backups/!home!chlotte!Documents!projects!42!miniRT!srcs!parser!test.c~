@@ -1,0 +1,23 @@
+#include "../../minirt.h"
+
+bool	ft_setup(t_mlx_obj *mlx, int x, int y)
+{
+	mlx->mlx_ptr = mlx_init();
+	mlx->win_ptr = mlx_new_window(mlx->mlx_ptr, x, y, "miniRT");
+	if (mlx->win_ptr == NULL)
+		return (false);
+	return (true);
+}
+
+
+int main(void){
+	t_mlx_obj	mlx;
+
+	ft_setup(&mlx, &img, &pixel, scene);
+        mlx_put_image_to_window(mlx.mlx_ptr, mlx.win_ptr, img.img_ptr, 0, 0);
+	mlx_key_hook(mlx.win_ptr, ft_exit, &mlx);
+	mlx_loop(mlx.mlx_ptr);
+	return (0);
+}
+
+}

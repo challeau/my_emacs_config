@@ -1,0 +1,85 @@
+/* Make sure these don't segfault */
+#include <stdio.h>
+#include "ft_ft_printf.h"
+
+int main(void)
+{
+	static char *s_hidden = "damn good job. bloody good damn good bloody good damn good job. \0 you are an excellent woman \0\0\0\0 this is not supposed to show";
+
+	ft_printf("%");
+	ft_printf("%5");
+	ft_printf("%05");
+	ft_printf("%-05");
+	ft_printf("%-5");
+	ft_printf("%00s", s_hidden);
+	ft_printf("%000s", s_hidden);
+	ft_printf("%0000s", s_hidden);
+	ft_printf("%-00s", s_hidden);
+	ft_printf("%0-0s", s_hidden);
+	ft_printf("%00-s", s_hidden);
+	ft_printf("%03s", s_hidden);
+	ft_printf("%09s", s_hidden);
+	ft_printf("%-03s", s_hidden);
+	ft_printf("%-09s", s_hidden);
+	ft_printf("%0-8.5i", 34);
+	ft_printf("%0-10.5i", -216);
+	ft_printf("%0-8.5i", 0);
+	ft_printf("%0-8.3i", 8375);
+	ft_printf("%0-8.3i", -8473);
+	ft_printf("%0-3.7i", 3267);
+	ft_printf("%0-3.7i", -2375);
+	ft_printf("%0-3.3i", 6983);
+	ft_printf("%0-3.3i", -8462);
+	ft_printf("%0-8.5d", 34);
+	ft_printf("%0-10.5d", -216);
+	ft_printf("%0-8.5d", 0);
+	ft_printf("%0-8.3d", 8375);
+	ft_printf("%0-8.3d", -8473);
+	ft_printf("%0-3.7d", 3267);
+	ft_printf("%0-3.7d", -2375);
+	ft_printf("%0-3.3d", 6983);
+	ft_printf("%0-3.3d", -8462);
+	ft_printf("%0-8.5u", 34);
+	ft_printf("%0-8.5u", 0);
+	ft_printf("%0-8.3u", 8375);
+	ft_printf("%0-3.7u", 3267);
+	ft_printf("%0-3.3u", 6983);
+	ft_printf("%0-8.5x", 34);
+	ft_printf("%0-8.5x", 0);
+	ft_printf("%0-8.3x", 8375);
+	ft_printf("%0-2.7x", 3267);
+	ft_printf("%0-3.3x", 6983);
+	ft_printf("%x", INT_MIN - 1);
+	ft_printf("%x", INT_MAX + 1);
+	ft_printf("%05s", "hello");
+	ft_printf("%0s", "hello");
+	ft_printf("%-s", "hello");
+	ft_printf("%05c", 'a');
+	ft_printf("%0c", 'a');
+	ft_printf("%-021s", "abc");
+	ft_printf("%-05s", "goes over");
+	ft_printf("%04.3s%-7.4s", "hello", "world");
+	ft_printf("%021s", NULL);
+	ft_printf("%02s", NULL);
+	ft_printf("%-021s", NULL);
+	ft_printf("%-03s", NULL);
+	ft_printf("%05c", '\0');
+	ft_printf("%-05c", '\0');
+	ft_printf("%.4c", 'a');	
+	ft_printf("%-"); 
+	ft_printf("%23"); 
+	ft_printf("%."); 
+	ft_printf("%p"); 
+	ft_printf("%d"); 
+	ft_printf("%u"); 
+	ft_printf("%x"); 
+	ft_printf("%X"); 
+	ft_printf("%c");
+	ft_printf("%d", NULL); 
+	ft_printf("%u", NULL); 
+	ft_printf("%x", NULL); 
+	ft_printf("%X", NULL); 
+	ft_printf("%f", NULL); 
+	ft_printf("%s", NULL); 
+	ft_printf("%c", NULL);
+}

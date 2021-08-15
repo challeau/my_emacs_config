@@ -1,0 +1,32 @@
+#include "tools.h"
+
+char	*ft_init_buff(void)
+{
+    static char buff[buff_sz + 1];
+    
+    ft_bzero(buff, buff_sz);
+    return (&buff[0]);
+}
+
+void	ft_flush_buff(char *buff, int *char_count)
+{
+    *char_count += ft_strlen(buff);
+    ft_putstr_fd(buff, 1);
+    ft_bzero(buff, buff_sz);
+}
+
+int	ft_fill_buff(char **buff, char *to_add, int *char_count)
+{
+    if (!to_add)
+	return (0);
+    if ((ft_strlen(*buff) + ft_strlen(to_add)) > buff_sz)
+	ft_flush_buff(*buff, char_count);
+    while (ft_strlen(to_add) > buff_sz)
+    {
+	ft_strlcat(*buff, to_add, buff_sz + 1);
+	ft_flush_buff(*buff, char_count);
+	to_add += buff_sz;
+    }
+    ft_strcat(*buff, to_add);
+    return (1);
+}

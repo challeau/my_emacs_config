@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# install dependencies
+sudo apt-get update && sudo apt-get -y install nginx
+echo "deb http://nginx.org/packages/debian `lsb_release -cs` nginx" | sudo tee /etc/apt/sources.list.d/nginx.list
+
+# import official signing key so apt can verify package authenticity
+curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -
+
+# verify key
+# sudo apt-key fingerprint ABF5BD827BD9BF62
+# pub   rsa2048 2011-08-19 [SC] [expires: 2024-06-14]
+#       573B FD6B 3D8F BC64 1079  A6AB ABF5 BD82 7BD9 BF62
+# uid   [ unknown] nginx signing key <signing-key@nginx.com>
+
+# install nginx
+sudo apt-get -y install nginx
+
+echo "nginx installed."

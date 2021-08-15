@@ -1,0 +1,15 @@
+#include "minirt.h"
+
+float	sdf_sphere(t_vec3f p, t_object obj){
+	float dist;
+
+	dist = vec_magnitude(obj.pos, p) - obj.data.sphere.radius;
+	return(dist);
+}
+
+float	sdf_plane(t_vec3f p, t_object obj){
+	float dist;
+
+	dist = vec_dot(p, obj.data.plane.orientation);// + h;
+	return (dist);
+}

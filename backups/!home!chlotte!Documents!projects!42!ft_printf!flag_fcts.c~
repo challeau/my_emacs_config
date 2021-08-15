@@ -1,0 +1,96 @@
+#include "tools.h"
+
+char	*ft_add_whitespace(char *src, int src_len, int width, int align)
+{
+    int		i;
+    static char *new;
+
+    i = 0;
+    if (align == 0)
+    {
+	while (i < width - src_len)
+	{
+	    new[i] = ' ';
+	    i++;
+	}
+	ft_strlcat(new, src, src_len + width);
+    }
+    if (align == 1)
+    {
+	ft_strlcpy(new, src, src_len);
+	while (i < width - src_len)
+	{
+	    new[i] = ' ';
+	    i++;
+	}
+    }
+    return (&new[0]);
+}
+
+char	*ft_add_zeros(char )
+{
+    if (align == 2)
+    {
+	if (ft_strncmp(src, "0\0", src_len) == 0)
+	    new = "0\0";
+	else
+	{
+	    while (i < width - src_len)
+	    {
+		new[i] = '0';
+		i++;
+	    }
+	    ft_strlcat(new, src, src_len + width);
+	}
+    }
+    return (&new[0])
+}
+
+t_flags	ft_flags_assign(char *f, va_list arg)
+{
+    t_flags flg = s_flags_default;
+
+    if (*f == '0' && (flg.align = 2))
+	f++;
+    if (flag_asso_tab[(int)*f] == F_dash && (flg.align = 1))
+	f++;
+    while (flag_asso_tab[(int)*f] == F_num)
+    {
+	flg.width = flg.width * 10 + *f - 48;
+	f++;
+    }
+    if (flg.width == 0 && flag_asso_tab[(int)*f] == F_star)
+    {
+	flg.width = va_arg(arg, int);
+	f++;
+    }
+    if (flag_asso_tab[(int)*f] == F_dot && flag_asso_tab[(int)*++f] == F_star)
+    {
+	flg.prec = va_arg(arg, int);
+	f++;
+    }
+    while (flag_asso_tab[(int)*f] == F_num)
+    {
+	flg.prec = flg.prec * 10 + *f - 48;
+	f++;
+    }
+    return (flg);
+}
+
+char	*ft_format_str(char *f, va_list arg)
+{
+    int		size;
+    char	*tmp;
+    static char	*new;
+    t_flags	flags;
+
+    tmp = ft_conv_handler((int)*f, arg);
+    size = ft_strlen(tmp);
+    flags = ft_flags_assign(f, arg);
+
+    if (flags.prec >= 0 && flags.prec < size)
+	tmp[flags.prec] = '\0';
+    if (size < flags.width)
+	new = ft_add_whitespace(tmp, size, flags.width, flags.align);
+    return (&new[0]);
+}

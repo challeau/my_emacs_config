@@ -1,0 +1,58 @@
+#include "../inc/minirt.h"
+
+float	vec_magnitude(t_vec3f p1, t_vec3f p2){
+	float	x;
+	float	y;
+	float	z;
+	float	dist;	
+
+	x = (p2.x - p1.x) * (p2.x - p1.x);
+	y = (p2.y - p1.y) * (p2.y - p1.y);
+	z = (p2.z - p1.z) * (p2.z - p1.z);
+	dist = sqrt(x + y + z);
+	return (dist);
+}
+
+t_vec3f	vec_normalize(t_vec3f uv){
+	t_vec3f	norm_uv;
+	int	len;
+
+	len = uv.x * uv.x + uv.y * uv.y + uv.z * uv.z;
+	norm_uv.x = uv.x / len;
+	norm_uv.y = uv.y / len;
+	norm_uv.z = uv.z / len;
+	return (norm_uv);
+}
+
+float	vec_dot(t_vec3f v1, t_vec3f v2){	
+	float	 product;
+
+	product = (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
+	return (product);
+}
+
+t_vec3f	vec_add(t_vec3f v1, t_vec3f v2){
+	return ((t_vec3f){v1.x + v2.x, v1.y + v2.y, v1.z + v2.z});
+}
+
+t_vec3f	vec_sub(t_vec3f v1, t_vec3f v2){
+	return ((t_vec3f){v1.x - v2.x, v1.y - v2.y, v1.z - v2.z});
+}
+
+
+// SCALAR OPs
+t_vec3f	vec_scal_add(t_vec3f uv, float scalar){
+	return ((t_vec3f){uv.x + scalar, uv.y + scalar, uv.z + scalar});
+}
+
+t_vec3f	vec_scal_sub(t_vec3f uv, float scalar){
+	return ((t_vec3f){uv.x - scalar, uv.y - scalar, uv.z - scalar});
+}
+
+t_vec3f	vec_scal_mult(t_vec3f uv, float scalar){
+	return((t_vec3f){uv.x * scalar, uv.y * scalar, uv.z * scalar});
+}
+
+t_vec3f	vec_scal_div(t_vec3f uv, float scalar){
+	return((t_vec3f){uv.x / scalar, uv.y / scalar, uv.z / scalar});
+}

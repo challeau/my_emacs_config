@@ -1,0 +1,90 @@
+#ifndef TOOLS_H
+#define TOOLS_H
+#include <limits.h>
+#include <stdarg.h>
+#include <stdbool.h>
+#include <unistd.h>
+
+# define buff_sz 1
+
+/* FLAG AND CONV DEF */
+/* align = 0 >> right	"    abc" */
+/* align = 1 >> left	"abc    " */
+/* align = 2 >> 0	"0000123" */
+typedef struct		s_flags
+{
+    int align;
+    int width;
+    int prec;
+}		t_flags;
+t_flags s_flags_default = {0, 0, -1};
+
+typedef enum	e_flag
+{
+    F_dash = 1,
+    F_num,
+    F_dot,
+    F_star
+}		t_flag;
+
+typedef enum	e_conv
+{
+    C_c,
+    C_s,
+    C_p,
+    C_d,
+    C_i,
+    C_u,
+    C_x,
+    C_X
+}		t_conv;
+
+const char flag_asso_tab[256] = {
+    ['-'] = F_dash,
+    ['0' ... '9'] = F_num,
+    ['.'] = F_dot,
+    ['*'] = F_star
+};
+
+const char conv_asso_tab[256] = {
+    ['c'] = C_c,
+    ['s'] = C_s,
+    ['p'] = C_p,
+    ['d'] = C_d,
+    ['i'] = C_i,
+    ['u'] = C_u,
+    ['x'] = C_x,
+    ['X'] = C_X
+};
+
+/* SRC */
+/* BUFF FCTS */
+char	*ft_init_buff(void);
+void	ft_fill_buff(char **buff, char *to_add, int *char_count);
+void	ft_buff_flush(char *buff, int *char_count);
+
+/* FLAG FCTS */
+t_flags	ft_flags_assign(char *f, va_list arg);
+char	*ft_format_str(char *f, va_list arg);
+
+
+/* CONV FCTS */
+char	*c_conv(va_list, t_flags flags);
+char	*s_conv(va_list, t_flags flags);
+char	*p_conv(va_list, t_flags flags);
+char	*d_conv(va_list, t_flags flags);
+char	*i_conv(va_list, t_flags flags);
+char	*u_conv(va_list, t_flags flags);
+char	*x_conv(va_list, t_flags flags);
+char	*X_conv(va_list, t_flags flags);
+
+/* TOOLS */
+char	*ft_dec_to_base(bool cap, unsigned long num, unsigned int base_len);
+int	ft_intlen(long n);
+int	ft_strchr_index(const char *str, char c);
+char	*ft_utoa(unsigned int num);
+
+char	*ft_add_spaces(char *src, int len, t_flags flags);
+char	*ft_add_zeros(char *src, int width);
+
+#endif

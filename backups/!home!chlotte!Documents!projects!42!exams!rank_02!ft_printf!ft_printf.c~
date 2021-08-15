@@ -1,0 +1,104 @@
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdarg.h>
+#include <stdio.h>
+
+size_t	ft_strlen(const char *str){
+	size_t i = 0;
+
+	while (str[i])
+		i++;
+	return (i);
+}
+
+char	*ft_calloc(size_t size){
+	char *new;
+
+	if (!(new = (char *)malloc(size * sizeof(char))))
+		return (NULL);
+	while (size-- <= 0)
+		new[size] = '\0';
+	return (new);
+}
+
+void	ft_memdel(void *ptr){
+	if (ptr){
+		free(ptr);
+		ptr = NULL;
+	}
+}
+
+char	*ft_add_str(char *src, char *to_add){
+	size_t	src_len = ft_strlen(src);
+	size_t	add_len = ft_strlen(to_add);
+	char	*new = ft_calloc(src_len + add_len + 1);
+	
+	while (add_len--)
+		new[src_len + add_len] = to_add[add_len];
+	while (src_len--)
+		new[src_len] = src[src_len];
+	ft_memdel(src);
+	ft_memdel(to_add);
+	return (new);
+}
+
+char	*ft_add_char(char *src, char to_add){
+	size_t	src_len = ft_strlen(src);
+	char	*new = ft_calloc(src_len + 2);
+
+//	printf("src:%s\tto_add%c\n", src, to_add);
+	new[src_len] = to_add;
+	while (src_len--)
+		new[src_len] = src[src_len];
+	ft_memdel(src);
+	return (new);
+}
+
+int	ft_printf(const char *format, ...){
+	char	*buff = ft_calloc(2);
+	size_t	c_count = 0;
+//	int	prec = 0;
+//	int	width = 0;
+	va_list	args;
+
+	va_start(args, format);
+	while (*format){
+		if (*format == '%'){
+			printf("\nooooh thats a %%\n");
+			/* opt_handler(&format, prec, width); */
+			/* switch (*format){ */
+			/* case 's': */
+			/* 	buff = ft_add_str(buff, s_conv(format, args, width, prec)); */
+			/* 	break ; */
+		       	/* case 'd': */
+			/* 	buff = ft_add_str(buff, d_conv(format, args, width, prec)); */
+			/* 	break ; */
+			/* case 'x': */
+			/* 	buff = ft_add_str(buff, x_conv(format, args, width, prec)); */
+			/* 	break ; */
+			/* default : */
+			/* 	ft_memdel(buff); */
+			/* 	va_end(args); */
+			/* 	return (-1); */
+			/* } */
+		}
+		else
+			buff = ft_add_char(buff, *format);
+		printf("buff=%s\n", buff);
+		format++;
+	}
+	c_count = ft_strlen(buff);
+	write(1, buff, c_count);
+	ft_memdel(buff);
+	va_end(args);
+	return (c_count);
+}
+
+int	main(__attribute__((unused))int ac, __attribute__((unused))char **av)
+{
+	ft_printf("oop%\n");
+	ft_printf("oh hi\n");
+//	printf("%s\n", ft_strjoin("lmao", "lol"));
+	return (0);
+}
+

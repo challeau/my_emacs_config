@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: main
+# key: C-c m
+# --
+int	main(__attribute__((unused))int ac, __attribute__((unused))char **av)
+{
+	
+	return (0);
+}

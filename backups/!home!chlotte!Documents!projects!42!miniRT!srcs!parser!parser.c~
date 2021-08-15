@@ -1,0 +1,87 @@
+#include "../../minirt.h"
+
+bool		(**scene_set_init(void))(char **attributes, t_scene *scene, size_t elem_num){
+	static bool	(*scene_set[9])(char **attributes, t_scene *scene, size_t elem_num);
+
+	scene_set[0] = &set_res;
+	scene_set[1] = &set_ambl;
+	scene_set[2] = &set_cam;
+	scene_set[3] = &set_light;
+	scene_set[4] = &set_sphere;
+	scene_set[5] = &set_plane;
+	scene_set[6] = &set_square;
+	scene_set[7] = &set_cylinder;
+	scene_set[8] = &set_triangle;
+
+	return (&scene_set[0]);
+}
+
+int	id_index(char *id){
+	int	i;
+        static const char	*elem_id_array[__ELEM_TOTAL] = {
+		"R", "A", "c", "l", "sp", "pl", "sq", "cy", "tr"};
+
+	i = 0;
+	while (i < __ELEM_TOTAL){
+		if (ft_strcmp(id, elem_id_array[i]) == 0)
+			return (i);
+		i++;
+	}
+	return (-1);
+}
+
+bool	assign_elem(char **attributes, t_scene *scene){
+	int		enum_val;
+	static size_t	elem_num = 0;
+	bool		(**scene_set)(char **attributes, t_scene *scene, size_t elem_num);
+
+	
+	scene_set = scene_set_init();
+	enum_val = id_index(attributes[0]);
+	if (enum_val >= 0 || enum_val <= 8){
+		if (scene_set[enum_val](attributes, scene, elem_num) == false)
+			return (false);
+		elem_num = enum_val > 1 ? elem_num + 1 : elem_num;
+		return (true);
+	}
+	return (false);
+}
+
+t_scene	parser(int ac, char **av){
+	int	fd;
+	int	ret;
+	char	*line;
+	char	**attributes;
+	t_scene scene;
+
+	ret = 1;
+	if (ac == 2){
+		fd = open(av[1], O_RDONLY);
+		while (ret > 0)
+		{
+			ret = get_next_line(fd, &line);
+			if (*line != '\0'){
+				attributes = ft_split(line, ' ');
+				ft_memdel(line);
+				if (assign_elem(attributes, &scene) == false){
+					scene.scene_is_set = false;
+					printf("scene.set is false henny <3\n");
+					break ;
+				}
+			}
+		}
+		scene.scene_is_set = true;
+		close(fd);
+	}
+	else
+		scene.scene_is_set = false;
+	return(scene);
+}
+
+
+void	print_scene_atrib(t_scene scene){
+	printf("set: %s\n", scene.is_set ? "true" : "false");
+	printf("res: [%f:%f]\n", scene.res.x, scene.res.y);
+	printf("ambl: %f, color[%f, %f, %f]\n", scene.amb_light.ratio, scene.amb_light.rgb.x, scene.amb_light.rgb.y, scene.amb_light.rgb.z);
+}
+

@@ -1,0 +1,47 @@
+#include "../minirt.h"
+
+t_vec3	float_to_rgb(float value){
+	float r;
+	float g;
+	float b;
+
+	r = value;
+	g = ft_mod(value * 256, 1.0);
+	r -= g / 256;
+	b = ft_mod(value * 256 * 256, 1.0);
+	g -= b / 256;
+	return ((t_vec3){r, g, b});
+}
+
+t_vec3	get_normal(t_vec3 pos){
+	float	dist;
+	t_vec3	eps;
+	t_vec3 n;
+
+	dist = get_dist(pos);
+	eps = (t_vec3){0.1, 0, 0};
+	n = (t_vec3){
+		get_dist(vec_add(pos, (t_vec3){eps.x, eps.y, eps.y})),
+		get_dist(vec_add(pos, (t_vec3){eps.y, eps.x, eps.y})),
+		get_dist(vec_add(pos, (t_vec3){eps.y, eps.y, eps.x})),
+	};
+	t_vec3 ret = vec_scal_div(vec_scal_sub(n, dist), .001);
+	return(ret);
+}
+
+// diffuse lighting
+float	get_light(t_cam cam, float dist_obj){
+	t_vec3	light_pos;
+	t_vec3	surf_pos;
+	t_vec3	v_light;
+	t_vec3	n;
+	float	diff;
+
+	light_pos = (t_vec3){0, 5, 6};
+	surf_pos = vec_add(cam.ori, vec_scal_mult(cam.dir, dist_obj));
+	v_light = vec_normalize(vec_sub(light_pos, surf_pos));
+	n = get_normal(surf_pos);
+	diff = vec_dot(n, v_light);
+	return (diff);
+}
+

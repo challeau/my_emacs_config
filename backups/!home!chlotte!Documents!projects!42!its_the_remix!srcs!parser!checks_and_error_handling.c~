@@ -1,0 +1,39 @@
+#include "../../inc/minirt.h"
+
+/* in case of error, free the object and cam lists and exits. */
+void	parsing_error(t_scene s, bool is_scene_alloc)
+{
+	if (is_scene_alloc == true)
+	{
+		free(s.obj_list);
+		free(s.cam_list);
+	}
+	perror("Error\nParsing failed. Check your arguments or file content.\nperror says");
+	exit(0);
+}
+
+/* checks that the window resolution isn't bigger than that of the screen. */
+/* if it is, adjusts it to fit in the screen. */
+void	fit_res_to_screen(t_scene *s, void *mlx_ptr)
+{
+	t_vec2i screen_res;
+
+	mlx_get_screen_size(mlx_ptr, &screen_res.x, &screen_res.y);
+	if (s->win_res.x > screen_res.x)
+		s->win_res.x = screen_res.x;
+	if (s->win_res.y > screen_res.y)
+		s->win_res.y = screen_res.y;
+	s->win_res.x = s->win_res.x;
+	s->win_res.y = s->win_res.y;
+}
+
+/* checks that the resolution and ambiant light are set */
+bool	check_necessary_elements(t_scene *s, void *mlx_ptr)
+{
+	if (s->win_res.x == 0 || s->win_res.y == 0)
+		return (false);
+	fit_res_to_screen(s, mlx_ptr);
+	if (s->amb_light.ratio == -1)
+		return (false);
+	return (true);
+}

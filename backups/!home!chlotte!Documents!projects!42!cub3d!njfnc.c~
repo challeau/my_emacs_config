@@ -1,0 +1,27 @@
+#include <mlx.h>
+
+struct	s_mlx_obj{
+	void	*mlx_ptr;
+	void	*win_ptr;		
+}	t_mlx_obj;
+
+void	ft_draw_line(struct s_mlx_obj mlx, int x1, int y1, int x2, int y2, int color)
+{
+	while (x1 != x2 && y1 != y2)
+	{
+		mlx_pixel_put(mlx.mlx_ptr, mlx.win_ptr, x1, y1, color);
+		x1 = x1 < x2 ? x1 + 1 : x1 - 1;
+		y1 = y1 < y2 ? y1 + 1 : y1 - 1;
+	}
+
+}
+
+int	main(__attribute__((unused))int ac, __attribute__((unused))char **av)
+{
+		struct s_mlx_obj	mlx;
+	mlx.mlx_ptr = mlx_init();
+	mlx.win_ptr = mlx_new_window(mlx.mlx_ptr, 640, 640, "Hello world");
+	ft_draw_line(mlx, int x1, int y1, int x2, int y2, int color);
+	mlx_loop(mlx.mlx_ptr);
+	return (0);
+}

@@ -1,0 +1,41 @@
+#include "libft.h"
+
+static uint8_t	subdiv_count(const char *str, char sep){
+	uint8_t i;
+
+	i = 0;
+	while (*str){
+		while (*str && *str == sep)
+			str++;
+		i++;
+		while (*str && *str != sep)
+			str++;
+	}
+	return (i);
+}
+
+char	**ft_split(const char *str, char sep){
+	size_t	i;
+	size_t	j;
+	size_t	next_sep;
+	uint8_t	word_num;
+	char	**new;
+
+	i = 0;
+	j = 0;
+	word_num = subdiv_count(str, sep);
+	if (!(new = (char **)malloc((word_num) * sizeof(char *))))
+		return (NULL);
+	while (str[j]){
+		while (str[j] && str[j] == sep)
+			j++;
+		next_sep = ft_strchr(str + j, sep);
+		new[i] = ft_calloc(ft_strnlen(str + j, next_sep));
+		ft_strlcpy(new[i++], str + j, next_sep);
+		if (i == word_num)
+			break ;
+		j += next_sep;
+	}
+	new[i] = NULL;
+	return (new);
+}

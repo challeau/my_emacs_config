@@ -1,0 +1,216 @@
+;;; init.el --- my first init file
+;;; --------------------------------------------------
+;;; Commentary:
+;;; it ain't much but it's honest work
+;;; --------------------------------------------------
+;;; Code:
+
+;;; --------------------------------------------------
+;;; PLUGINS
+;;; --------------------------------------------------
+(package-initialize)
+
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
+
+(when (not package-archive-contents)
+  (package-refresh-contents)
+  )
+
+(defvar my-packages
+  '(
+    cider
+    clojure-mode
+    clojure-mode-extra-font-locking
+    company
+    elpy
+    flycheck
+    helm
+    magit
+    paredit
+    rainbow-delimiters
+    smex
+    smartparens
+    telephone-line
+    yasnippet)
+  )
+
+(dolist (p my-packages)
+  (when (not (package-installed-p p))
+    (package-install p))
+  )
+
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package)
+  )
+
+(require 'use-package)
+(setq use-package-always-ensure t)
+
+(use-package ace-jump-mode
+  :ensure t
+  :bind ("C-x j" . 'ace-jump-mode)
+  :bind ("C-x l" . 'ace-jump-line-mode)
+  )
+
+(use-package ace-window
+  :ensure t
+  :bind ("C-x o" . 'ace-window)
+  )
+
+(use-package helm
+  :ensure t
+  :bind ("M-x" . 'helm-M-x)
+  ("C-x b" . 'helm-buffers-list)
+  ("C-x C-f" . 'helm-find-files)
+  :config ()
+  )
+
+(use-package company
+  :ensure t
+  :config (global-company-mode)
+  )
+
+(use-package elpy
+  :ensure t
+  :init (elpy-enable)
+  )
+
+(use-package flycheck
+  :ensure t
+  :config (global-flycheck-mode)
+  )
+
+(require 'package)
+(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
+(require 'org)
+(define-key global-map "\C-cl" 'org-store-link)
+(define-key global-map "\C-ca" 'org-agenda)
+(setq org-log-done t)
+
+(use-package smartparens
+  :ensure t
+  :config (smartparens-global-mode)
+  (show-smartparens-global-mode)
+  )
+
+(require 'yasnippet)
+(use-package yasnippet
+   :ensure t
+   :config
+   (yas-global-mode t)
+   (yas-reload-all)
+   )
+
+(use-package dumb-jump
+  :ensure t
+  :bind   ("C-c g" . 'dumb-jump-go)
+	  ("C-c G" . 'dumb-jump-go-back))
+
+(require 'esh-module)
+(add-to-list 'eshell-modules-list 'eshell-tramp)
+
+;;; --------------------------------------------------
+;;; NAVIGATION
+;;; --------------------------------------------------
+;;; remembers recent commands
+(require 'recentf)
+(setq recentf-save-file (concat user-emacs-directory ".recentf"))
+(recentf-mode 1)
+(setq recentf-max-menu-items 40)
+(setq (helm-ff-file-name-history-use-recentf t))
+
+;;; --------------------------------------------------
+;;; EASE OF USE
+;;; --------------------------------------------------
+(defun duplicate-line()
+  "Duplicates a line."
+  (interactive)
+  (move-beginning-of-line 1)
+  (kill-line)
+  (yank)
+  (newline)
+  (yank)
+  )
+
+(defun copy-whole-line()
+  "Copies the line the cursor is on."
+  (interactive)
+  (move-beginning-of-line 1)
+  (set-mark-command nil)
+  (forward-line)
+  (kill-ring-save (region-beginning) (region-end))
+  )
+
+(defun toggle-comment-on-line ()
+  "Comments or uncomments current line."
+  (interactive)
+  (move-beginning-of-line 1)
+  (set-mark-command nil)
+  (forward-line)
+  (comment-or-uncomment-region (region-beginning) (region-end))
+  )
+
+
+;;; key bindings
+(global-set-key (kbd "C-c d") 'duplicate-line)
+(global-set-key (kbd "M-;") 'comment-or-uncomment-region)
+(global-set-key (kbd "C-c C-c") 'toggle-comment-on-line)
+(global-set-key (kbd "C-c w") 'copy-whole-line)
+
+;;; --------------------------------------------------
+;;; STARTUP
+;;; --------------------------------------------------
+;;; no message
+(setq inhibit-startup-message t)
+
+;;; windows config
+(add-hook 'window-setup-hook 'toggle-frame-fullscreen t)
+(split-window-right)
+(windmove-right)
+(split-window)
+(windmove-down)
+(eshell)
+(windmove-left)
+
+;;; no menu/tool bars
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(toggle-scroll-bar -1)
+
+;;; no ring
+(setq ring-bell-function 'ignore)
+
+;;; no font menu
+(global-set-key (kbd "s-t") '(lambda () (interactive)))
+
+;;; --------------------------------------------------
+;;; LOOKS
+;;; --------------------------------------------------
+;;; theme
+(unless (package-installed-p 'gruvbox-theme)
+  (package-refresh-contents)
+  (package-install 'gruvbox-theme)
+  )
+
+;;; theme choice, courtesy of Lureif
+(defun select-theme ()
+  "Asks the user if they want to load a light or a dark theme."
+  (if (y-or-n-p "Load light theme ? ")
+      (load-theme 'gruvbox-light-medium t)
+    (load-theme 'gruvbox-dark-medium t))
+  )
+(select-theme)
+
+;;; mode line
+(require 'telephone-line)
+(setq telephone-line-primary-left-separator 'telephone-line-cubed-left
+      telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left
+      telephone-line-primary-right-separator 'telephone-line-cubed-left
+      telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-left)
+(setq telephone-line-height 24
+      telephone-line-evil-use-short-tag t)
+(telephone-line-mode 1)
+

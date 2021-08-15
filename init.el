@@ -5,85 +5,44 @@
 ;;; --------------------------------------------------
 ;;; Code:
 
-;;; EASE OF USE
-;;; key bindings
-(global-set-key (kbd "C-c c") 'kill-ring-save)
-(global-set-key (kbd "C-c x") 'kill-region)
-(global-set-key (kbd "C-c v") 'yank)
+;;; --------------------------------------------------
+;;; START-UP
+;;; --------------------------------------------------
+;;; packages
 
-(global-set-key (kbd "M-;") 'comment-or-uncomment-region)
-(global-set-key (kbd "C-c C-c") 'comment-line)
-
-;;; PACKAGES
-(when (>= emacs-major-version 24)
-  (require 'package)
-  (add-to-list 'package-archives
-             '("tromey" . "http://tromey.com/elpa/") t)
-  (add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
-  (add-to-list 'package-archives
-                '("melpa-stable" . "http://stable.melpa.org/packages/") t)
-  (add-to-list 'package-pinned-packages '(cider . "melpa-stable") t)
-  (add-to-list 'package-pinned-packages '(magit . "melpa-stable") t)
-  (add-to-list 'package-pinned-packages '(evil  . "melpa-stable") t)
-
-  )
+(require 'package)
+;;; (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 
 (package-initialize)
+
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
+(add-to-list 'package-archives '("elpy" . "https://melpa.org/#/elpy") t)
+(add-to-list 'package-archives '("yasnippet" . "https://melpa.org/#/yasnippet") t)
 
 (when (not package-archive-contents)
   (package-refresh-contents)
   )
 
-(defvar my-packages
-  '(
-    cider
-    clojure-mode
-    clojure-mode-extra-font-locking
-    company
-    flycheck
-    magit
-    paredit
-    rainbow-delimiters
-    smex
-    telephone-line
-    yasnippet)
-  )
-
-(dolist (p my-packages)
-  (when (not (package-installed-p p))
-    (package-install p))
-  )
-
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
-  (package-install 'use-package)
-  )
+  (package-install 'use-package))
 
 (require 'use-package)
 (setq use-package-always-ensure t)
 
-(use-package company
-  :ensure t
-  :config (global-company-mode)
-  )
-
-(use-package flycheck
-  :ensure t
-  :config (global-flycheck-mode)
-  )
-
-(require 'yasnippet)
-(use-package yasnippet
-   :ensure t
-   :config
-   (yas-global-mode t)
-   (yas-reload-all)
-   )
-
+;;; --------------------------------------------------
 ;;; STARTUP
-;;; no message
+;;; --------------------------------------------------
+;;; no message, menu/tool bar, font menu, and ring. replace (yes, no) questions with (y,n).
 (setq inhibit-startup-message t)
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(toggle-scroll-bar -1)
+(setq ring-bell-function 'ignore)
+(fset 'yes-or-no-p 'y-or-n-p)
 
 ;;; windows config
 (add-hook 'window-setup-hook 'toggle-frame-fullscreen t)
@@ -94,136 +53,160 @@
 (eshell)
 (windmove-left)
 
-;;; no menu/tool bars
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(toggle-scroll-bar -1)
+;;; --------------------------------------------------
+;;; PLUGINS
+;;; --------------------------------------------------
+(use-package ace-jump-mode
+  :bind ("C-x j" . 'ace-jump-mode)
+  :bind ("C-x l" . 'ace-jump-line-mode))
 
-;;; no ring
-(setq ring-bell-function 'ignore)
+(use-package ace-window
+  :bind ("C-x o" . 'ace-window)
+  )
 
-;;; no font menu
-(global-set-key (kbd "s-t") '(lambda () (interactive)))
+(use-package company
+  :config (global-company-mode)
+  )
 
+(use-package elpy
+  :init (elpy-enable)
+  )
+
+(use-package flycheck
+  :config (global-flycheck-mode)
+  )
+
+(use-package recentf
+  :bind ("C-x C-r" . 'recentf-open-files)
+  :config (recentf-mode 1)
+  (setq-default recent-save-file "~/.emacs.d/recentf")
+  (setq recentf-max-menu-items 40)
+  )
+
+(use-package helm
+  :config (recentf-mode 1)
+  (setq-default recent-save-file "~/.emacs.d/recentf")
+  (setq-default helm-ff-file-name-history-use-recentf t)
+  :bind (("C-x b" . 'helm-buffers-list)
+	 ("C-x C-f" . 'helm-find-files))
+  )
+
+(use-package org
+  :bind (("C-c l" . 'org-store-link)
+	 ("C-c a" . 'org-agenda))
+  :config (setq org-log-done t)
+  )
+
+
+(use-package saveplace
+  :config (save-place-mode 1)
+  )
+
+(use-package smartparens
+  :config (smartparens-global-mode)
+  (show-smartparens-global-mode)
+  )
+
+(use-package smex
+  :bind ("M-x" . smex)
+  :config
+  (setq smex-save-file (concat user-emacs-directory ".smex-items"))
+  (smex-initialize)
+  )
+
+(use-package yasnippet
+  :init (yas-global-mode 1)
+  :config (yas-reload-all)
+  )
+
+;;; --------------------------------------------------
+;;; KEY BINDINGS
+;;; --------------------------------------------------
+;;; duplicate line
+(global-set-key (kbd "C-c d")
+		(lambda () (interactive)
+		  (move-beginning-of-line 1) (kill-line) (yank) (newline) (yank))
+		)
+
+;;; copy whole line
+(global-set-key (kbd "C-c w")
+		(lambda () (interactive)
+		  (move-beginning-of-line 1) (set-mark-command nil) (forward-line)
+		  (kill-ring-save (region-beginning) (region-end)))
+		)
+
+;;; toggle comment on region
+(global-set-key (kbd "M-;") 'comment-or-uncomment-region)
+
+;;; toggle comment on line
+(global-set-key (kbd "C-c C-c")
+		(lambda () (interactive)
+		  (move-beginning-of-line 1) (set-mark-command nil) (forward-line)
+		  (comment-or-uncomment-region (region-beginning) (region-end)))
+		)
+
+;;; --------------------------------------------------
 ;;; LOOKS
+;;; --------------------------------------------------
 ;;; theme
 (unless (package-installed-p 'gruvbox-theme)
   (package-refresh-contents)
   (package-install 'gruvbox-theme)
   )
 
-;;; theme choice, function is courtesy of Lureif
+
+;;; theme choice, courtesy of Lureif
 (defun select-theme ()
   "Asks the user if they want to load a light or a dark theme."
   (if (y-or-n-p "Load light theme ? ")
       (load-theme 'gruvbox-light-medium t)
-    (load-theme 'gruvbox-dark-medium t)))
+    (load-theme 'gruvbox-dark-medium t))
+  )
 (select-theme)
 
 ;;; mode line
-(require 'telephone-line)
-(setq telephone-line-primary-left-separator 'telephone-line-cubed-left
-      telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left
-      telephone-line-primary-right-separator 'telephone-line-cubed-left
-      telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-left)
-(setq telephone-line-height 24
-      telephone-line-evil-use-short-tag t)
-(telephone-line-mode 1)
+(use-package telephone-line
+  :config
+  (setq telephone-line-primary-left-separator 'telephone-line-cubed-left)
+  (setq telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left)
+  (setq telephone-line-primary-right-separator 'telephone-line-cubed-left)
+  (setq telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-left)
+  (setq telephone-line-height 24
+	telephone-line-evil-use-short-tag t)
+  (telephone-line-mode 1)
+  )
 
-
-;;; NAVIGATION
-;;; remembers recent commands
-(setq recentf-save-file (concat user-emacs-directory ".recentf"))
-(require 'recentf)
-(recentf-mode 1)
-(setq recentf-max-menu-items 40)
-
-;; point to the last place where it was when you the file was last visited
-(save-place-mode 1)
-
-;; keep track of saved places in ~/.emacs.d/places
-(setq save-place-file (concat user-emacs-directory "places"))
-
-;;; insensitivity to case in find file and eshell
-(setq read-file-name-completion-ignore-case t)
- (add-hook 'eshell-mode-hook
-               (lambda ()
-                (setq case-fold-search nil)))
-
-;;; (yes or no) questions replace with (y or n)
-(fset 'yes-or-no-p 'y-or-n-p)
-
-;;; easy browsing with M-x
-(setq smex-save-file (concat user-emacs-directory ".smex-items"))
-(smex-initialize)
-(global-set-key (kbd "M-x") 'smex)
-
-
+;;; --------------------------------------------------
 ;;; EDITING
+;;; --------------------------------------------------
 ;;; line number and highlght
 (global-linum-mode)
 (global-hl-line-mode 1)
 
-;;; scroll one line at a time (less jumpy)
-(require 'sublimity)
-(require 'sublimity-scroll)
-(sublimity-mode 1)
-(setq sublimity-scroll-weight 5
-      sublimity-scroll-drift-length 2)
-
 ;;; killing/yanking interact with the clipboard
-(setq
-      select-enable-clipboard t
+(setq select-enable-clipboard t
       select-enable-primary t
-      save-interprogram-paste-before-kill t)
+      save-interprogram-paste-before-kill t
+      )
 
 ;;; parentheses highlight and colour
 (show-paren-mode 1)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
-;;; backup files in a directory
-(setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups"))))
-
-;;; disables the creation of # files during edition (or is it ~ files?)
-(setq auto-save-default nil)
-
+;;; --------------------------------------------------
 ;;; MODE SPECIFIC
+;;; --------------------------------------------------
 ;;; shell scripts indentation
 (setq-default sh-basic-offset 2
 	      sh-indentation 2)
 
 ;;; c mode style/indentation
+(defvar c-default-style "linux")
 (setq-default indent-tabs-mode t)
-(setq smex-save-file (concat user-emacs-directory ".smex-items"))
-(smex-initialize)
-(global-set-key (kbd "M-x") 'smex)
-
-
-;;; EDITING
-;;; line number and highlght
-(global-linum-mode)
-(global-hl-line-mode 1)
-
-;;; killing/yanking interact with the clipboard
-(setq
-      select-enable-clipboard t
-      select-enable-primary t
-      save-interprogram-paste-before-kill t)
-
-;;; parentheses highlight and colour
-(show-paren-mode 1)
-(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
-
-;;; backup files in a directory
-(setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups"))))
-
-;;; MODE SPECIFIC
-;;; shell scripts indentation
-(setq-default sh-basic-offset 2
-	      sh-indentation 2)
-
-;;; c mode style/indentation
-(setq c-default-style "linux")
+(defvaralias 'c-basic-offset 'tab-width)
+(add-hook 'c-mode-hook
+  (function (lambda ()
+              (whitespace-mode t))))
 
 ;;; clojure/elisp setup
 (add-to-list 'load-path "~/.emacs.d/customizations")
@@ -239,10 +222,10 @@
  '(coffee-tab-width 2)
  '(custom-safe-themes
    (quote
-    ("e1d09f1b2afc2fed6feb1d672be5ec6ae61f84e058cb757689edb669be926896" "aded61687237d1dff6325edb492bde536f40b048eab7246c61d5c6643c696b7f" default)))
+    ("3c68f48ea735abe65899f489271d11cbebbe87da7483acf9935ea4502efd0117" "fe1c13d75398b1c8fd7fdd1241a55c286b86c3e4ce513c4292d01383de152cb7" "939ea070fb0141cd035608b2baabc4bd50d8ecc86af8528df9d41f4d83664c6a" "a06658a45f043cd95549d6845454ad1c1d6e24a99271676ae56157619952394a" "4cf9ed30ea575fb0ca3cff6ef34b1b87192965245776afa9e9e20c17d115f3fb" "e1d09f1b2afc2fed6feb1d672be5ec6ae61f84e058cb757689edb669be926896" "aded61687237d1dff6325edb492bde536f40b048eab7246c61d5c6643c696b7f" default)))
  '(package-selected-packages
    (quote
-    (sublimity evil telephone-line yasnippet flycheck company powerline use-package tagedit smex rainbow-delimiters projectile paredit magit ido-completing-read+ exec-path-from-shell clojure-mode-extra-font-locking cider))))
+    (spaceline twilight-anti-bright-theme dracula-theme dumb-jump helm ace-window ace-jump-mode elpy sublimity evil telephone-line yasnippet flycheck company powerline use-package tagedit smex rainbow-delimiters projectile paredit magit ido-completing-read+ exec-path-from-shell clojure-mode-extra-font-locking cider))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

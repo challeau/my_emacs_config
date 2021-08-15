@@ -1,0 +1,8 @@
+#include "libft.h"
+
+void    ft_memdel(char *ptr){
+    if (ptr){
+        free (ptr);
+        ptr = NULL;
+    }
+}

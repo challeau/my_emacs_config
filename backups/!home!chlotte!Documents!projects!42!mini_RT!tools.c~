@@ -1,0 +1,19 @@
+#include "minirt.h"
+
+int	ft_abs(int num){
+	return(num < 0 ? -num : num);
+}
+
+float	ft_mod(float a, float b){ 
+	float	mod;
+
+	mod = a < 0 ? -a : a;
+	if (b < 0)
+		b = -b;
+	while (mod >= b)
+		mod = mod - b;
+	return (a < 0 ? -mod : mod);
+}
+int	ft_floor(float value){
+	return ((int)value);
+}

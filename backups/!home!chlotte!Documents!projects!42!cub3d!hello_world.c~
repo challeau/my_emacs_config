@@ -1,0 +1,82 @@
+#include "mlx.h"
+#include <stdio.h>
+
+
+struct	s_point{
+	int x;
+	int y;
+}	t_point;
+	
+struct	s_mlx_obj{
+	void	*mlx_ptr;
+	void	*win_ptr;		
+}	t_mlx_obj;
+	
+void	ft_draw_square(struct s_mlx_obj mlx, struct s_point ori, int side, int color)
+{
+	struct s_point point;
+
+	point.x = ori.x;
+	point.y = ori.y;
+	while (point.x++ < ori.x + side)
+		mlx_pixel_put(mlx.mlx_ptr, mlx.win_ptr, point.x, point.y, color);
+	while (point.y++ < ori.y + side)
+		mlx_pixel_put(mlx.mlx_ptr, mlx.win_ptr, point.x, point.y, color);
+	while (point.x-- > ori.x)
+		mlx_pixel_put(mlx.mlx_ptr, mlx.win_ptr, point.x, point.y, color);
+	while (point.y-- > ori.y)
+		mlx_pixel_put(mlx.mlx_ptr, mlx.win_ptr, point.x, point.y, color);
+
+}
+
+void	ft_draw_line(struct s_mlx_obj mlx, int x1, int y1, int x2, int y2, int color)
+{
+	while (x1 != x2 && y1 != y2)
+	{
+		mlx_pixel_put(mlx.mlx_ptr, mlx.win_ptr, x1, y1, color);
+		x1 = x1 < x2 ? x1 + 1 : x1 - 1;
+		y1 = y1 < y2 ? y1 + 1 : y1 - 1;
+	}
+
+}
+	
+int	main(__attribute__((unused))int ac, __attribute__((unused))char **av)
+{
+	struct s_mlx_obj	mlx;
+	struct s_point		head;
+	struct s_point		boop;
+	struct s_point		eye_1;
+	struct s_point		eye_2;
+	struct s_point		mouth;
+	int x;
+	int y;
+
+	x = 320;
+	y = 190;
+	head.x = 220;
+	head.y = 220;
+	boop.x = 310;
+	boop.y = 170;
+	eye_1.x = 263;
+	eye_1.y = 263;
+	eye_2.x = 363;
+	eye_2.y = 263;
+	mouth.x = 305;
+	mouth.y = 320;
+	mlx.mlx_ptr = mlx_init();
+	mlx.win_ptr = mlx_new_window(mlx.mlx_ptr, 640, 640, "Hello world");
+	ft_draw_square(mlx, head, 200, 0x00FF00);
+	ft_draw_square(mlx, boop, 20, 0x00FF00);
+	ft_draw_square(mlx, eye_1, 14, 0x00FF00);
+	ft_draw_square(mlx, eye_2, 14, 0x00FF00);
+	ft_draw_square(mlx, mouth, 30, 0x00FF00);
+	while (y++ < 220)
+		mlx_pixel_put(mlx.mlx_ptr, mlx.win_ptr, x, y, 0x00FF00);
+	x = 305;
+	y = 335;
+	while(x++ < 335)
+		mlx_pixel_put(mlx.mlx_ptr, mlx.win_ptr, x, y, 0x00FF00);
+	mlx_string_put(mlx.mlx_ptr, mlx.win_ptr, 350, 150, 0x00FF00, "HELLO WORLD!");
+	mlx_loop(mlx.mlx_ptr);
+	return (0);
+}
