@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: JS comment
+# key: comm
+# binding: C-c m
+# --
+
+/**
+ * XX
+ * @param {XX} x - XX
+ */

@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: printf, skeleton of a classic printf function
-# key: printf
-# binding: C-c p
-# --
-
-printf("%s\n", x);

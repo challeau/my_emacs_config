@@ -1,0 +1,41 @@
+# -*- mode: snippet -*-
+# name: html
+# key: 
+# --
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- General information -->
+    <title></title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta charset="utf-8" />
+    <base href=""/>
+
+    <!-- Open Graph settings -->
+    <meta property="og:title" content="">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="">
+    <meta property="og:description" content="">
+    <meta property="og:image" content="logo.png">
+
+    <!-- Viewport settings -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Link the stylesheet -->
+    <link rel="stylesheet" href="style/style.css" />
+
+    <!-- Custom fonts -->
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="css/icons/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="css/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="css/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="css/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+  </head>
+
+  <body>
+  </body>
+</html>
