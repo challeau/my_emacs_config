@@ -1,9 +1,0 @@
-FROM debian:buster
-
-RUN apt-get update && apt-get -y install python php
-
-WORKDIR .
-
-COPY srcs/hello_world.py .
-
-ENTRYPOINT ["python","hello_world.py"]

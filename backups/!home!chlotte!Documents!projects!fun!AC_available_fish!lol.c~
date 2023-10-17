@@ -1,7 +1,0 @@
-#include <stdio.h>
-
-int	main(__attribute__((unused))int ac, __attribute__((unused))char **av)
-{
-	printf("%d\n", 1 | 0);
-	return (0);
-}

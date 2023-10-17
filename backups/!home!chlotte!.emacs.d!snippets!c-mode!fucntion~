@@ -1,9 +1,0 @@
-# -*- mode: snippet -*-
-# name: fucntion, inserts the skeleton of a C program function
-# key: fucntion
-# binding: C-c f
-# --
-
-void	ft_x(void)
-{
-}

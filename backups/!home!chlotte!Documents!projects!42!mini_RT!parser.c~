@@ -1,9 +1,0 @@
-#include "minirt.h"
-
-typedef struct	s_scene{
-	int8_t	win_width;
-	int8_t	win_height;
-	
-}		t_scene;
-
-t_scene

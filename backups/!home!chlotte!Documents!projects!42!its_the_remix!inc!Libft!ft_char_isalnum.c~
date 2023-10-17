@@ -1,6 +1,0 @@
-#include "libft.h"
-
-bool	ft_isalnum(int c)
-{
-	return ((ft_char_isalpha(c)) || (ft_char_isdigit(c)) ? true : false);
-}

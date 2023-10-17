@@ -1,8 +1,0 @@
-from bs4 import BeautifulSoup
-import requests
-
-URL = "https://animalcrossing.fandom.com/wiki/Fish_(New_Horizons)#Northern%20Hemisphere"
-page = requests.get(URL)
-soup = BeautifulSoup(page.content, 'html.parser')
-fish_elems = soup.find_all('title', title_='Northern Hemisphere')
-print(fish_elems)
