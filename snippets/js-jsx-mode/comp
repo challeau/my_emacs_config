@@ -1,0 +1,21 @@
+# -*- mode: snippet -*-
+# name: React component
+# key: comp
+# --
+
+// CONTEXT
+
+// COMPONENTS
+
+
+function ${1:`(file-name-sans-extension (buffer-name))`}(props) {
+
+  return (
+    <>
+    </>
+  );
+}
+
+export default ${1:`(file-name-sans-extension (buffer-name))`};
+
+

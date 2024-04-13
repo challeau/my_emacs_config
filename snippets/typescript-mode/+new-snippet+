@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: doc comment
+# key: comm
+# --
+
+
+/**
+ * XX
+ * @param {XX} x - XX
+ */
